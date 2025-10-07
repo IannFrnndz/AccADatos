@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<empleados>
+    <empleado>
+        <nombre>Juan Pérez</nombre>
+        <puesto>Desarrollador</puesto>
+        <edad>30</edad>
+    </empleado>
+    <empleado>
+        <nombre>María Gómez</nombre>
+        <puesto>Analista</puesto>
+        <edad>28</edad>
+    </empleado>
+    <empleado>
+        <nombre>Carlos Ruiz</nombre>
+        <puesto>Gerente</puesto>
+        <edad>40</edad>
+    </empleado>
+</empleados>

@@ -1,0 +1,31 @@
+Bebidas;Té Dharamsala;18.00;39
+Bebidas;Cerveza Sasquatch;14.00;111
+Bebidas;Café de Malasia;46.00;17
+Bebidas;Cerveza Outback;15.00;15
+Condimentos;Sirope de regaliz;10.00;13
+Condimentos;Azúcar negra Malacca;19.45;27
+Condimentos;Sandwich de vegetales;43.90;24
+Repostería;Pastas de té de chocolate;9.20;25
+Repostería;Mermelada de Sir Rodney's;81.00;40
+Repostería;Chocolate Schoggi;43.90;49
+Repostería;Chocolate blanco;16.25;65
+Repostería;Tarta de azúcar;49.30;17
+Lácteos;Queso Cabrales;21.00;22
+Lácteos;Queso Manchego La Pastora;38.00;86
+Lácteos;Queso gorgonzola Telino;12.50;0
+Lácteos;Queso Gudbrandsdals;36.00;26
+Lácteos;Queso Mozzarella Giovanni;34.80;14
+Granos/Cereales;Pan fino;9.00;61
+Granos/Cereales;Cereales para Filo;7.00;38
+Granos/Cereales;Raviolis Angelo;19.50;36
+Carnes;Buey Mishi Kobe;97.00;29
+Carnes;Cordero Alice Springs;39.00;0
+Carnes;Empanada de cerdo;7.45;21
+Carnes;Paté chino;24.00;115
+Frutas/Verduras;Cuajada de judías;23.25;35
+Frutas/Verduras;Queso de soja Longlife;10.00;4
+Pescado/Marisco;Pez espada;31.93;31
+Pescado/Marisco;Algas Konbu;6.00;24
+Pescado/Marisco;Arenque ahumado;9.50;5
+Pescado/Marisco;Arenque salado;12.00;95
+Pescado/Marisco;Caviar rojo;15.00;101
