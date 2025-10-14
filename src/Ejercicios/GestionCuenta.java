@@ -64,7 +64,7 @@ public class GestionCuenta {
 
             System.out.println("Cuenta creada correctamente.");
         }else{
-            
+
             String titular = "";
             double saldo = 0.0;
             List<String> movimientos = new ArrayList<>();
