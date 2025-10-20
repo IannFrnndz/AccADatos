@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="clientes">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cliente" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="nombre" type="xs:string"/>
+                            <xs:element name="saldo" type="xs:decimal"/>
+                            <xs:element name="historial">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="movimiento" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType mixed="true">
+                                                <xs:attribute name="fecha" type="xs:date" use="required"/>
+                                                <xs:attribute name="tipo" use="optional">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:enumeration value="apertura"/>
+                                                            <xs:enumeration value="ingreso"/>
+                                                            <xs:enumeration value="retirada"/>
+                                                            <xs:enumeration value="transferencia"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+        <?xml version="1.0" encoding="UTF-8"?>
+

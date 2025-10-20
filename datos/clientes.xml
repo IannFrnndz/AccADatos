@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clientes>
+    <cliente id="1">
+        <nombre>Juan Pérez</nombre>
+        <saldo>0.0</saldo>
+        <historial>
+            <movimiento fecha="2025-10-20" tipo="apertura">Cuenta creada</movimiento>
+        </historial>
+    </cliente>
+    <cliente id="2">
+        <nombre>Ana García</nombre>
+        <saldo>150.50</saldo>
+        <historial/>
+    </cliente>
+</clientes>
