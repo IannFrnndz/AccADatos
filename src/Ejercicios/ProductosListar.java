@@ -1,6 +1,7 @@
+package Ejercicios;
+
 import  java.util.*;
 import java.io.*;
-import java.nio.file.*;
 
 public class ProductosListar {
     public static void main(String[] args) throws IOException {

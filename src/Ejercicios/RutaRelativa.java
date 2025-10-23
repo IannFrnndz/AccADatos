@@ -1,3 +1,5 @@
+package Ejercicios;
+
 import java.io.File;
 public class RutaRelativa {
     public static void main(String[] args) {

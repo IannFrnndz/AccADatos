@@ -1,3 +1,5 @@
+package Ejercicios;
+
 import java.io.*;
 public class GestorFicheroTexto {
     public static void main(String[] args) {
