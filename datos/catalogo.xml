@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogo>
+    <producto id="p1">
+        <nombre>Tablet</nombre>
+        <precio>150</precio>
+        <autor>MarcaX</autor>
+    </producto>
+    <producto id="p2">
+        <nombre>Teléfono</nombre>
+        <precio>99</precio>
+        <autor>MarcaY</autor>
+    </producto>
+    <producto id="p3">
+        <nombre>Portátil</nombre>
+        <precio>120</precio>
+        <autor>MarcaZ</autor>
+    </producto>
+    <producto id="p4">
+        <nombre>Accesorio</nombre>
+        <precio>25</precio>
+        <autor></autor>
+    </producto>
+</catalogo>
