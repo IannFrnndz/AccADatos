@@ -1,11 +1,54 @@
 package RA1;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 
-public class CuentaBancaria {
+public class CuentaBancaria implements Serializable {
+
+    private Cliente cliente;
+    private ArrayList<Movimientos> movimientos;
+
+    public CuentaBancaria(Cliente cliente){
+        this.cliente = cliente;
+        this.movimientos = new ArrayList<>();
+    }
+
+    public Cliente getCliente(){
+        return cliente;
+    }
+
+    public ArrayList<Movimientos> getMovimientos(){
+        return movimientos;
+    }
+
+    public void ingresar(double cantidad){
+        if(cantidad <0){
+            System.out.println("Cantidad invalida, vuelve a intentarlo");
+            //ingresar(cantidad);
+
+        }else{
+            movimientos.add(new Movimientos ("Ingreso", cantidad));
+            System.out.println("Has ingresado: " + cantidad + " €");
+        }
+    }
+
+    public void retirar(double cantidad){
+        if (cantidad <0){
+            System.out.println("Cantidad invalida, vuelve a intentarlo");
+            //retirar(cantidad);
+        }
+        double saldoActual = getSaldo();
+        if (cantidad > saldoActual){
+            System.out.println("No tienes suficiente saldo para retirar esa cantidad.");
+        }else{
+            movimientos.add(new Movimientos("Retirada", cantidad));
+            System.out.println("Has retirado: " + cantidad + " €");
+        }
+    }
+
+    public double getSaldo(){
+
+    }
 
     public static void main(String[] args) {
         existeCuenta();
