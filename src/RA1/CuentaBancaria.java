@@ -45,12 +45,33 @@ public class CuentaBancaria implements Serializable {
             System.out.println("Has retirado: " + cantidad + " €");
         }
     }
-
+    // recorre todos los movimientos y suma las cantidades (ingresos positivos, retiradas negativas)
     public double getSaldo(){
+        double saldo = 0.0;
+        for (Movimientos movimiento : movimientos){
+            saldo += movimiento.getCantidad();
 
+        }
+
+        return saldo;
     }
 
-    public static void main(String[] args) {
+    public void mostrarMovimientos(){
+        if(movimientos.isEmpty()){
+            System.out.println("No hay movimientos para mostrar.");
+
+        }else{
+            for(Movimientos m : movimientos){
+                System.out.println(m);
+            }
+        }
+    }
+
+    public String toString(){
+        return "Cuenta de " + cliente + " | Saldo actual: " + getSaldo() + " €";
+    }
+
+   /* public static void main(String[] args) {
         existeCuenta();
     }
 
@@ -79,6 +100,8 @@ public class CuentaBancaria implements Serializable {
     public void crearCuenta(){
 
     }
+    */
+
 }
 
 
