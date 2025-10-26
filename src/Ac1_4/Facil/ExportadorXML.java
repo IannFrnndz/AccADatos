@@ -52,6 +52,9 @@ public class ExportadorXML {
             String archivo = crearNombreArchivo();
 
             // calculamos las  estadísticas
+            // stream convierte la colección en un flujo de datos para procesarlos de manera funcional
+            // mapToDouble extrae las notas de cada estudiante como valores double
+            //devuelve un double Stream que permite realizar operaciones estadísticas como sum, average, max, min
             double suma = estudiantes.stream().mapToDouble(Estudiante::getNota).sum();
             double media = suma / estudiantes.size();
             double maxima = estudiantes.stream().mapToDouble(Estudiante::getNota).max().orElse(0.0);

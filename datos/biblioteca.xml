@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biblioteca>
+    <informacion>
+        <nombre>Biblioteca Municipal</nombre>
+        <fecha>27/10/2025</fecha>
+        <totalLibros>5</totalLibros>
+    </informacion>
+    <categorias>
+        <categoria nombre="Ficción" totalLibros="3">
+            <libro isbn="978-84-123" disponible="true">
+                <titulo>El Quijote</titulo>
+                <autor>Miguel de Cervantes</autor>
+                <año>1605</año>
+                <paginas>863</paginas>
+                <prestamos>150</prestamos>
+            </libro>
+            <libro isbn="978-84-456" disponible="false">
+                <titulo>Cien años de soledad</titulo>
+                <autor>Gabriel García Márquez</autor>
+                <año>1967</año>
+                <paginas>471</paginas>
+                <prestamos>98</prestamos>
+            </libro>
+            <libro isbn="978-84-654" disponible="false">
+                <titulo>1984</titulo>
+                <autor>George Orwell</autor>
+                <año>1949</año>
+                <paginas>328</paginas>
+                <prestamos>200</prestamos>
+            </libro>
+            <estadisticas>
+                <totalPrestamos>448</totalPrestamos>
+                <prestamosMedio>149,33</prestamosMedio>
+            </estadisticas>
+        </categoria>
+        <categoria nombre="Ciencia" totalLibros="2">
+            <libro isbn="978-84-789" disponible="true">
+                <titulo>Breve historia del tiempo</titulo>
+                <autor>Stephen Hawking</autor>
+                <año>1988</año>
+                <paginas>256</paginas>
+                <prestamos>120</prestamos>
+            </libro>
+            <libro isbn="978-84-321" disponible="true">
+                <titulo>El origen de las especies</titulo>
+                <autor>Charles Darwin</autor>
+                <año>1859</año>
+                <paginas>502</paginas>
+                <prestamos>85</prestamos>
+            </libro>
+            <estadisticas>
+                <totalPrestamos>205</totalPrestamos>
+                <prestamosMedio>102,50</prestamosMedio>
+            </estadisticas>
+        </categoria>
+    </categorias>
+    <resumenGlobal>
+        <totalCategorias>2</totalCategorias>
+        <totalLibros>5</totalLibros>
+        <librosDisponibles>3</librosDisponibles>
+        <librosPrestados>2</librosPrestados>
+    </resumenGlobal>
+</biblioteca>

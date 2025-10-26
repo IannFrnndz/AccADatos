@@ -1,0 +1,83 @@
+{
+  "biblioteca": {
+    "informacion": {
+      "nombre": "Biblioteca Municipal",
+      "fecha": "27/10/2025",
+      "totalLibros": 5
+    },
+    "categorias": {
+      "Ficción": {
+        "totalLibros": 3,
+        "libros": [
+          {
+            "isbn": "978-84-123",
+            "titulo": "El Quijote",
+            "autor": "Miguel de Cervantes",
+            "año": 1605,
+            "paginas": 863,
+            "disponible": true,
+            "prestamos": 150
+          },
+          {
+            "isbn": "978-84-456",
+            "titulo": "Cien años de soledad",
+            "autor": "Gabriel García Márquez",
+            "año": 1967,
+            "paginas": 471,
+            "disponible": false,
+            "prestamos": 98
+          },
+          {
+            "isbn": "978-84-654",
+            "titulo": "1984",
+            "autor": "George Orwell",
+            "año": 1949,
+            "paginas": 328,
+            "disponible": false,
+            "prestamos": 200
+          }
+        ],
+        "estadisticas": {
+          "totalPrestamos": 448,
+          "prestamosMedio": 149,33
+          , "libroMasPrestado": "1984"
+        }
+      },
+      "Ciencia": {
+        "totalLibros": 2,
+        "libros": [
+          {
+            "isbn": "978-84-789",
+            "titulo": "Breve historia del tiempo",
+            "autor": "Stephen Hawking",
+            "año": 1988,
+            "paginas": 256,
+            "disponible": true,
+            "prestamos": 120
+          },
+          {
+            "isbn": "978-84-321",
+            "titulo": "El origen de las especies",
+            "autor": "Charles Darwin",
+            "año": 1859,
+            "paginas": 502,
+            "disponible": true,
+            "prestamos": 85
+          }
+        ],
+        "estadisticas": {
+          "totalPrestamos": 205,
+          "prestamosMedio": 102,50
+          , "libroMasPrestado": "Breve historia del tiempo"
+        }
+      }
+    },
+    "resumenGlobal": {
+      "totalCategorias": 2,
+      "totalLibros": 5,
+      "librosDisponibles": 3,
+      "librosPrestados": 2,
+      "totalPrestamosHistorico": 653
+    }
+  }
+}

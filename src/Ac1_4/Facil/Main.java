@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
+
+        // arraylist con los estudiantes
         ArrayList<Estudiante> estudiantes = new ArrayList<>();
         estudiantes.add(new Estudiante(1, "Juan", "García López", 20, 8.5));
         estudiantes.add(new Estudiante(2, "María", "Rodríguez", 19, 9.2));
@@ -11,6 +13,7 @@ public class Main {
         estudiantes.add(new Estudiante(4, "Ana", "López", 20, 8.9));
         estudiantes.add(new Estudiante(5, "Carlos", "Sánchez", 22, 6.5));
 
+        // llamadas a los métodos de exportación
         ExportadorCSV.exportarCSV(estudiantes, "datos/estudiantes.csv");
         ExportadorXML.exportarXML(estudiantes, "datos/estudiantes.xml");
         ExportadorJSON.exportarJSON(estudiantes, "datos/estudiantes.json");

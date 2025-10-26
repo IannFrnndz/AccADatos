@@ -1,0 +1,14 @@
+# BIBLIOTECA MUNICIPAL - CATÁLOGO DE LIBROS
+
+# CATEGORÍA: Ficción
+ISBN;Título;Autor;Año;Páginas;Disponible;Préstamos
+978-84-123;El Quijote;Miguel de Cervantes;1605;863;true;150
+978-84-456;Cien años de soledad;Gabriel García Márquez;1967;471;false;98
+978-84-654;1984;George Orwell;1949;328;false;200
+# Subtotal Ficción: 3 libros, 448 préstamos
+
+# CATEGORÍA: Ciencia
+ISBN;Título;Autor;Año;Páginas;Disponible;Préstamos
+978-84-789;Breve historia del tiempo;Stephen Hawking;1988;256;true;120
+978-84-321;El origen de las especies;Charles Darwin;1859;502;true;85
+# Subtotal Ciencia: 2 libros, 205 préstamos

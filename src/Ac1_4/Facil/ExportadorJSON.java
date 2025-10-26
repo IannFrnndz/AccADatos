@@ -49,13 +49,13 @@ public class ExportadorJSON {
 
             String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            // Construir JSON manualmente con indentación (pretty print)
+            // Construir JSON manualmente con indentación adecuada
             bw.write("{");
             bw.newLine();
             bw.write(IDENTACION + "\"clase\": {");
             bw.newLine();
 
-            // Metadata
+            // agregamos la metadata
             bw.write(IDENTACION + IDENTACION + "\"metadata\": {");
             bw.newLine();
             bw.write(IDENTACION + IDENTACION + IDENTACION + "\"fecha\": \"" + fechaActual + "\",");
@@ -65,7 +65,7 @@ public class ExportadorJSON {
             bw.write(IDENTACION + IDENTACION + "},");
             bw.newLine();
 
-            // Estudiantes
+            // y los estudiantes
             bw.write(IDENTACION + IDENTACION + "\"estudiantes\": [");
             bw.newLine();
             for (int i = 0; i < estudiantes.size(); i++) {
@@ -88,7 +88,7 @@ public class ExportadorJSON {
             bw.write(IDENTACION + IDENTACION + "],");
             bw.newLine();
 
-            // Estadísticas
+            // ingresamos la parte de las estadisticas
             bw.write(IDENTACION + IDENTACION + "\"estadisticas\": {");
             bw.newLine();
             bw.write(IDENTACION + IDENTACION + IDENTACION + "\"notaMedia\": " + String.format("%.2f", media) + ",");
