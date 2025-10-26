@@ -1,4 +1,5 @@
 package RA1;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
@@ -7,6 +8,7 @@ public class Menu {
 
     public Menu(CuentaBancaria cuenta){
         sc = new Scanner(System.in);
+        this.cuenta = cuenta;
     }
     public void menuInicial(){
         int opcion;
@@ -18,7 +20,13 @@ public class Menu {
             System.out.println("4. Ver movimientos");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
-            opcion = sc.nextInt();
+
+            try {
+                opcion = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Opción inválida. Introduce un número.");
+                opcion = -1;
+            }
 
             switch (opcion) {
                 case 1 -> ingresarDinero();
@@ -26,21 +34,31 @@ public class Menu {
                 case 3 -> consultarSaldo();
                 case 4 -> verMovimientos();
                 case 0 -> System.out.println("Saliendo del programa...");
-                default -> System.out.println("Opción inválida.");
+                default -> {
+                    if (opcion != 0) System.out.println("Opción inválida.");
+                }
             }
         } while (opcion != 0);
     }
 
     private void ingresarDinero() {
         System.out.print("Cantidad a ingresar: ");
-        double cantidad = sc.nextDouble();
-        cuenta.ingresar(cantidad);
+        try {
+            double cantidad = Double.parseDouble(sc.nextLine().trim());
+            cuenta.ingresar(cantidad);
+        } catch (NumberFormatException e) {
+            System.out.println("Cantidad inválida. Introduce un número válido.");
+        }
     }
 
     private void retirarDinero() {
         System.out.print("Cantidad a retirar: ");
-        double cantidad = sc.nextDouble();
-        cuenta.retirar(cantidad);
+        try {
+            double cantidad = Double.parseDouble(sc.nextLine().trim());
+            cuenta.retirar(cantidad);
+        } catch (NumberFormatException e) {
+            System.out.println("Cantidad inválida. Introduce un número válido.");
+        }
     }
 
     private void consultarSaldo() {
@@ -50,5 +68,4 @@ public class Menu {
     private void verMovimientos() {
         cuenta.mostrarMovimientos();
     }
-
 }

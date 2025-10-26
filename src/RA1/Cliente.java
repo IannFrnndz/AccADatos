@@ -17,6 +17,12 @@ public class Cliente implements Serializable {
     }
 
     public String getNombre(){
+
         return nombre;
     }
+    @Override
+    public String toString() {
+        return nombre + " (DNI: " + dni + ")";
+    }
+
 }
