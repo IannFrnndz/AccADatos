@@ -1,4 +1,4 @@
-package Ac1_4;
+package Ac1_4.Facil;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,8 @@ public class Main {
         estudiantes.add(new Estudiante(4, "Ana", "López", 20, 8.9));
         estudiantes.add(new Estudiante(5, "Carlos", "Sánchez", 22, 6.5));
 
-        ExportadorCSV.exportarCSV(estudiantes, "estudiantes.csv");
+        ExportadorCSV.exportarCSV(estudiantes, "datos/estudiantes.csv");
+        ExportadorXML.exportarXML(estudiantes, "datos/estudiantes.xml");
+        ExportadorJSON.exportarJSON(estudiantes, "datos/estudiantes.json");
     }
 }

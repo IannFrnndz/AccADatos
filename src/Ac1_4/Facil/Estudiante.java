@@ -1,13 +1,15 @@
-package Ac1_4;
+package Ac1_4.Facil;
 
 public class Estudiante {
+
+    // Atributos de los estudiantes
     private int id;
     private String nombre;
     private String apellidos;
     private int edad;
     private double nota;
 
-
+    // constructor
     public Estudiante(int id, String nombre, String apellidos, int edad, double nota) {
         this.id = id;
         this.nombre = nombre;
