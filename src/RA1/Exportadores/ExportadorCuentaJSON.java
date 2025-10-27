@@ -1,0 +1,193 @@
+package RA1.Exportadores;
+
+import RA1.Cliente;
+import RA1.CuentaBancaria;
+import RA1.Movimientos;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
+public class ExportadorCuentaJSON {
+    static final String CARPETA = "exportaciones";
+    // Fecha usada para el nombre del archivo
+    static String fechaArchivo = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()); // (formato para nombre archivo)
+
+    private static final String INDENTACION = "    ";
+    private static final String INDENTACION2 = INDENTACION + INDENTACION;
+    private static final String INDENTACION3 = INDENTACION2 + INDENTACION;
+    private static final String INDENTACION4 = INDENTACION2 + INDENTACION2;
+
+    private static final String NODOPADRE = "cuenta";
+
+    public static boolean exportar(CuentaBancaria cuenta, String nombreArchivo) {
+        ArrayList<Movimientos> movimientos = cuenta.getMovimientos();
+        Cliente cliente = cuenta.getCliente();
+
+        // VALIDACIONES
+        if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+            System.out.println("ERROR: El nombre del archivo no puede estar vacío.");
+            return false;
+        }
+
+        String rutaCompleta = CARPETA + File.separator + nombreArchivo + "_" + fechaArchivo + ".json";
+
+        // CREAR DIRECTORIO
+        if (crearDirectorio(CARPETA)) {
+            // Utilizo OutputStreamWriter y FileOutputStream para aplicar UTF_8
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(rutaCompleta), StandardCharsets.UTF_8))) {
+
+                // 1. Apertura
+                bw.write("{");
+                bw.newLine();
+                bw.write(INDENTACION + "\"" + NODOPADRE + "\": {");
+                bw.newLine();
+
+                // 2. Metadata
+                String fechaMetadata = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")); // fecha y hora actual
+
+                bw.write(INDENTACION2 + "\"metadata\": {");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"version\": \"1.0\",");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"fecha\": \"" + escaparJSON(fechaMetadata) + "\",");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"formato\": \"JSON\"");
+                bw.newLine();
+                bw.write(INDENTACION2 + "},");
+                bw.newLine();
+
+
+                // 3. Datos de la cuenta
+
+                bw.write(INDENTACION2 + "\"cliente\": {");
+                bw.newLine();
+                String nombre = cliente != null ? cliente.getNombre() : "";
+                String dni = cliente != null ? cliente.getDni() : "";
+                bw.write(INDENTACION3 + "\"nombre\": \"" + escaparJSON(nombre) + "\",");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"DNI\": \"" + escaparJSON(dni) + "\"");
+                bw.newLine();
+                bw.write(INDENTACION2 + "},");
+                bw.newLine();
+
+                bw.write(INDENTACION2 + "\"saldo\": " + formatearDouble(cuenta.getSaldo()) + ",");
+                bw.newLine();
+
+
+                // 4. Lista de movimientos
+                bw.write(INDENTACION2 + "\"movimientos\": [");
+                bw.newLine();
+                for (int i = 0; i < movimientos.size(); i++) {
+                    Movimientos m = movimientos.get(i);
+                    bw.write(INDENTACION3 + "{");
+                    bw.newLine();
+                    bw.write(INDENTACION4 + "\"id\": \"" + escaparJSON(String.valueOf(i + 1)) + "\",");
+                    bw.newLine();
+                    bw.write(INDENTACION4 + "\"tipo\": \"" + escaparJSON(m.getTipo()) + "\",");
+                    bw.newLine();
+                    bw.write(INDENTACION4 + "\"cantidad\": " + formatearDouble(m.getCantidad()) + ",");
+                    bw.newLine();
+                    // formatear fecha de LocalDateTime a string
+                    String fechaMov = "";
+                    if (m.getFecha() != null) {
+                        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                        fechaMov = m.getFecha().format(formato);
+                    }
+                    bw.write(INDENTACION4 + "\"fecha\": \"" + escaparJSON(fechaMov) + "\"");
+                    bw.newLine();
+                    bw.write(INDENTACION3 + "}" + (i < movimientos.size() - 1 ? "," : ""));
+                    bw.newLine();
+                }
+                bw.write(INDENTACION2 + "],");
+                bw.newLine();
+
+
+                // 5. Resumen
+
+                // Cálculos: en tu modelo las retiradas se guardan como cantidades negativas.
+                double totalGastado = 0;
+                double totalIngresado = 0;
+                for (Movimientos mov : movimientos) {
+                    double c = mov.getCantidad();
+                    if (c > 0) {
+                        totalIngresado += c;
+                    } else {
+                        totalGastado += -c; // acumular como positivo el gasto
+                    }
+                }
+
+                bw.write(INDENTACION2 + "\"resumenMovimientos\": {");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"numMovimientos\": " + movimientos.size() + ",");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"totalGastos\": " + formatearDouble(totalGastado) + ",");
+                bw.newLine();
+                bw.write(INDENTACION3 + "\"totalIngresos\": " + formatearDouble(totalIngresado));
+                bw.newLine();
+                bw.write(INDENTACION2 + "}");
+                bw.newLine();
+                bw.write(INDENTACION + "}");
+                bw.newLine();
+                bw.write("}");
+
+                System.out.println("Exportación JSON completada: " + rutaCompleta);
+                return true;
+            } catch (FileNotFoundException e) {
+                System.out.println("Error: archivo no encontrado -> " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("Error al escribir el archivo JSON: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No se pudo crear el directorio de exportaciones.");
+        }
+        return false; // (no se ha creado el directorio o hubo error)
+    }
+
+    // --- Utility methods (equivalentes a utils.Utils que no existe en el proyecto) ---
+
+    private static boolean crearDirectorio(String ruta) {
+        File carpeta = new File(ruta);
+        if (carpeta.exists()) {
+            return carpeta.isDirectory();
+        } else {
+            return carpeta.mkdirs();
+        }
+    }
+
+    // Escapa texto para JSON de forma sencilla: reemplaza backslash y comillas, y convierte control chars básicos
+    private static String escaparJSON(String valor) {
+        if (valor == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < valor.length(); i++) {
+            char c = valor.charAt(i);
+            switch (c) {
+                case '\\' -> sb.append("\\\\");
+                case '"' -> sb.append("\\\"");
+                case '\b' -> sb.append("\\b");
+                case '\f' -> sb.append("\\f");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> sb.append("\\r");
+                case '\t' -> sb.append("\\t");
+                default -> {
+                    if (c < 0x20) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String formatearDouble(double val) {
+        // Formato con dos decimales y punto como separador
+        return String.format(Locale.ROOT, "%.2f", val);
+    }
+}
