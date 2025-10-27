@@ -1,4 +1,4 @@
-package RA1;
+package RA1Parte2;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,7 +14,6 @@ public class Movimientos implements Serializable {
         this.fecha = LocalDateTime.now();
         this.tipo = tipo;
         this.cantidad = cantidad;
-
     }
 
     public LocalDateTime getFecha(){
@@ -28,9 +27,10 @@ public class Movimientos implements Serializable {
     }
 
 
+
     @Override
     public String toString() {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return "[" + fecha.format(formato) + "] " + tipo + " de " + cantidad + " €";
+        return "[" + fecha.format(formato) + "] " + tipo + " de " + cantidad + " € ";
     }
 }

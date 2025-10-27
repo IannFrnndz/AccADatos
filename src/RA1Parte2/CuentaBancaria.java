@@ -1,14 +1,17 @@
-package RA1;
+package RA1Parte2;
 
-import java.io.*;
+import RA1Parte2.Cliente;
+import RA1Parte2.Movimientos;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class CuentaBancaria implements Serializable {
 
-    private Cliente cliente;
+    private RA1Parte2.Cliente cliente;
     private ArrayList<Movimientos> movimientos;
 
-    public CuentaBancaria(Cliente cliente){
+    public CuentaBancaria(RA1Parte2.Cliente cliente){
         this.cliente = cliente;
         this.movimientos = new ArrayList<>();
     }
@@ -26,6 +29,8 @@ public class CuentaBancaria implements Serializable {
             System.out.println("Cantidad inválida, vuelve a intentarlo (debe ser > 0).");
             return;
         } else {
+
+
             movimientos.add(new Movimientos("Ingreso", cantidad));
             System.out.println("Has ingresado: " + cantidad + " €");
         }

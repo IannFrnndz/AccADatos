@@ -1,0 +1,35 @@
+{
+    "listado_de_movimientos": {
+        "metadata": {
+            "version": "1.0",
+            "fecha": "27/10/2025 14:23:13",
+            "formato": "JSON",
+            "totalMovimientos": 3
+        },
+        "movimientos": [
+            {
+                "id": "1",
+                "tipo": "Ingreso",
+                "cantidad": 3.00,
+                "fecha": "27/10/2025 13:27"
+            },
+            {
+                "id": "2",
+                "tipo": "Retirada",
+                "cantidad": -1.00,
+                "fecha": "27/10/2025 13:27"
+            },
+            {
+                "id": "3",
+                "tipo": "Ingreso",
+                "cantidad": 5.00,
+                "fecha": "27/10/2025 13:47"
+            }
+        ],
+        "resumen": {
+            "numMovimientos": 3,
+            "totalGastos": 1.00,
+            "totalIngresos": 8.00
+        }
+    }
+}

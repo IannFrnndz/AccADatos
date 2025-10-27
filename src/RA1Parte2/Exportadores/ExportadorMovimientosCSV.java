@@ -1,23 +1,19 @@
-package RA1.Exportadores;
+package RA1Parte2.Exportadores;
 
 
-import RA1.Movimientos;
+import RA1Parte2.Movimientos;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class ExportadorMovimientosCSV {
-    static final String CARPETA = "datos";
+    static final String CARPETA = "exportaciones";
     static String fechaArchivo = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     private static final String SEPARADOR = ";"; // Separador CSV
 
@@ -43,15 +39,14 @@ public class ExportadorMovimientosCSV {
             // Escribimos en UTF-8 para evitar problemas con caracteres especiales
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(rutaCompleta), StandardCharsets.UTF_8))) {
 
-                // 1. ESCRIBIR ENCABEZADO
                 escribirEncabezado(writer);
 
-                // 2. ESCRIBIR CADA MOVIMIENTO
+                // Escrubimos los movimientos
                 for (Movimientos m : movimientos) {
                     escribirMovimiento(writer, m);
                 }
 
-                // 3. ESCRIBIR RESUMEN
+                // Escribimos el resumen
                 escribirResumen(writer, movimientos);
 
                 System.out.println("Exportación CSV completada: " + rutaCompleta);
@@ -63,15 +58,16 @@ public class ExportadorMovimientosCSV {
         } else {
             System.out.println("No se pudo crear el directorio de exportaciones.");
         }
-        return false; // (no se ha creado el directorio o error en escritura)
+        // en caso de que no se ha creado el directorio o error en escritura
+        return false;
     }
 
-    // Encabezado (nombres de las columnas)
+    // Encabezado
     private static void escribirEncabezado(BufferedWriter writer) throws IOException {
         writer.write("Tipo" + SEPARADOR);
         writer.write("Cantidad" + SEPARADOR);
-        writer.write("Fecha"); // El último elemento SIN SEPARADOR (no hay concepto en tu modelo)
-        writer.newLine(); // Salto de línea al final
+        writer.write("Fecha");
+        writer.newLine();
     }
 
     // Escribe todos los campos de cada movimiento
@@ -84,8 +80,8 @@ public class ExportadorMovimientosCSV {
         writer.write(formatearDouble(m.getCantidad()) + SEPARADOR);
         LocalDateTime fechaMov = m.getFecha();
         String fechaStr = fechaMov != null ? fechaMov.format(formato) : "";
-        writer.write(escaparCSV(fechaStr)); // El último elemento SIN SEPARADOR
-        writer.newLine(); // Salto de línea al final
+        writer.write(escaparCSV(fechaStr));
+        writer.newLine();
     }
 
     // Escribe el Resumen
@@ -98,11 +94,11 @@ public class ExportadorMovimientosCSV {
             if (c > 0) {
                 totalIngresado += c;
             } else {
-                totalGastado += -c; // acumular como positivo el gasto
+                totalGastado += -c;
             }
         }
 
-        writer.newLine(); // Línea en blanco (Para separar el resumen de los elementos de arriba)
+        writer.newLine();
 
         writer.write("# RESUMEN");
         writer.newLine();
@@ -114,8 +110,7 @@ public class ExportadorMovimientosCSV {
         writer.newLine();
     }
 
-    // --- Utilities locales (sustituyen a utils.Utils que no existe en el proyecto) ---
-
+    // creamos los utilies del proyecto para crear, escapar y formatear
     private static boolean crearDirectorio(String ruta) {
         File carpeta = new File(ruta);
         if (carpeta.exists()) {
@@ -125,11 +120,10 @@ public class ExportadorMovimientosCSV {
         }
     }
 
-    // Escapa valores para CSV: duplica comillas y encierra en comillas si contiene separador, comilla o salto de línea
     private static String escaparCSV(String valor) {
         if (valor == null) return "";
         boolean necesitaComillas = valor.contains("\"") || valor.contains(SEPARADOR) || valor.contains("\n") || valor.contains("\r");
-        String v = valor.replace("\"", "\"\""); // duplicar comillas
+        String v = valor.replace("\"", "\"\"");
         if (necesitaComillas) {
             v = "\"" + v + "\"";
         }
