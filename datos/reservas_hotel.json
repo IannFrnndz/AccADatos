@@ -1,0 +1,114 @@
+{
+  "hotel": {
+    "informacion": {
+      "nombre": "Hotel Paradise",
+      "fecha": "27/10/2025"
+    },
+    "clientes": {
+      "1": {
+        "nombre": "Juan García",
+        "email": "juan@email.com",
+        "telefono": "666111222"
+      },
+      "2": {
+        "nombre": "María López",
+        "email": "maria@email.com",
+        "telefono": "777222333"
+      },
+      "3": {
+        "nombre": "Pedro Torres",
+        "email": "pedro@email.com",
+        "telefono": "688555444"
+      }
+    },
+    "habitaciones": {
+      "101": {
+        "tipo": "Doble",
+        "precioPorNoche": 90,00,
+        "disponible": false
+      },
+      "205": {
+        "tipo": "Suite",
+        "precioPorNoche": 200,00,
+        "disponible": true
+      },
+      "303": {
+        "tipo": "Individual",
+        "precioPorNoche": 50,00,
+        "disponible": true
+      }
+    },
+    "reservas": [
+      {
+        "id": 1,
+        "clienteId": 1,
+        "habitacionNumero": 101,
+        "fechaEntrada": "20/10/2025",
+        "fechaSalida": "23/10/2025",
+        "noches": 3,
+        "precioTotal": 270,00,
+        "estado": "Confirmada"
+      },
+      {
+        "id": 2,
+        "clienteId": 2,
+        "habitacionNumero": 205,
+        "fechaEntrada": "21/10/2025",
+        "fechaSalida": "25/10/2025",
+        "noches": 4,
+        "precioTotal": 800,00,
+        "estado": "Confirmada"
+      },
+      {
+        "id": 3,
+        "clienteId": 3,
+        "habitacionNumero": 303,
+        "fechaEntrada": "18/10/2025",
+        "fechaSalida": "20/10/2025",
+        "noches": 2,
+        "precioTotal": 100,00,
+        "estado": "Completada"
+      },
+      {
+        "id": 4,
+        "clienteId": 1,
+        "habitacionNumero": 303,
+        "fechaEntrada": "27/10/2025",
+        "fechaSalida": "29/10/2025",
+        "noches": 2,
+        "precioTotal": 100,00,
+        "estado": "Cancelada"
+      }
+    ],
+    "estadisticas": {
+      "porTipoHabitacion": {
+        "Suite": {
+          "totalReservas": 1,
+          "ingresos": 800,00,
+          "porcentaje": 63,0
+        },
+        "Doble": {
+          "totalReservas": 1,
+          "ingresos": 270,00,
+          "porcentaje": 21,3
+        },
+        "Individual": {
+          "totalReservas": 2,
+          "ingresos": 200,00,
+          "porcentaje": 15,7
+        }
+      },
+      "porEstado": {
+        "Confirmada": 2,
+        "Completada": 1,
+        "Cancelada": 1
+      },
+      "resumen": {
+        "totalReservas": 4,
+        "ingresosTotal": 1270,00,
+        "nochesReservadas": 11,
+        "ocupacionMedia": 2,8
+      }
+    }
+  }
+}

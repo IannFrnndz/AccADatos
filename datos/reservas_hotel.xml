@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hotel>
+  <informacion>
+    <nombre>Hotel Paradise</nombre>
+    <fecha>27/10/2025</fecha>
+  </informacion>
+
+  <reservas totalReservas="4">
+    <reserva id="1" estado="Confirmada">
+      <cliente>
+        <id>1</id>
+        <nombre>Juan García</nombre>
+        <email>juan@email.com</email>
+        <telefono>666111222</telefono>
+      </cliente>
+      <habitacion numero="101" tipo="Doble">
+        <precioPorNoche>90,00</precioPorNoche>
+        <disponible>false</disponible>
+      </habitacion>
+      <fechas>
+        <entrada>20/10/2025</entrada>
+        <salida>23/10/2025</salida>
+        <noches>3</noches>
+      </fechas>
+      <precio>
+        <total>270,00</total>
+        <porNoche>90,00</porNoche>
+      </precio>
+    </reserva>
+    <reserva id="2" estado="Confirmada">
+      <cliente>
+        <id>2</id>
+        <nombre>María López</nombre>
+        <email>maria@email.com</email>
+        <telefono>777222333</telefono>
+      </cliente>
+      <habitacion numero="205" tipo="Suite">
+        <precioPorNoche>200,00</precioPorNoche>
+        <disponible>true</disponible>
+      </habitacion>
+      <fechas>
+        <entrada>21/10/2025</entrada>
+        <salida>25/10/2025</salida>
+        <noches>4</noches>
+      </fechas>
+      <precio>
+        <total>800,00</total>
+        <porNoche>200,00</porNoche>
+      </precio>
+    </reserva>
+    <reserva id="3" estado="Completada">
+      <cliente>
+        <id>3</id>
+        <nombre>Pedro Torres</nombre>
+        <email>pedro@email.com</email>
+        <telefono>688555444</telefono>
+      </cliente>
+      <habitacion numero="303" tipo="Individual">
+        <precioPorNoche>50,00</precioPorNoche>
+        <disponible>true</disponible>
+      </habitacion>
+      <fechas>
+        <entrada>18/10/2025</entrada>
+        <salida>20/10/2025</salida>
+        <noches>2</noches>
+      </fechas>
+      <precio>
+        <total>100,00</total>
+        <porNoche>50,00</porNoche>
+      </precio>
+    </reserva>
+    <reserva id="4" estado="Cancelada">
+      <cliente>
+        <id>1</id>
+        <nombre>Juan García</nombre>
+        <email>juan@email.com</email>
+        <telefono>666111222</telefono>
+      </cliente>
+      <habitacion numero="303" tipo="Individual">
+        <precioPorNoche>50,00</precioPorNoche>
+        <disponible>true</disponible>
+      </habitacion>
+      <fechas>
+        <entrada>27/10/2025</entrada>
+        <salida>29/10/2025</salida>
+        <noches>2</noches>
+      </fechas>
+      <precio>
+        <total>100,00</total>
+        <porNoche>50,00</porNoche>
+      </precio>
+    </reserva>
+  </reservas>
+
+  <estadisticas>
+    <porTipoHabitacion>
+      <Suite>
+        <totalReservas>1</totalReservas>
+        <ingresos>800,00</ingresos>
+      </Suite>
+      <Doble>
+        <totalReservas>1</totalReservas>
+        <ingresos>270,00</ingresos>
+      </Doble>
+      <Individual>
+        <totalReservas>2</totalReservas>
+        <ingresos>200,00</ingresos>
+      </Individual>
+    </porTipoHabitacion>
+
+    <porEstado>
+      <Confirmada>2</Confirmada>
+      <Completada>1</Completada>
+      <Cancelada>1</Cancelada>
+    </porEstado>
+
+    <resumen>
+      <totalReservas>4</totalReservas>
+      <ingresosTotal>1270,00</ingresosTotal>
+      <nochesReservadas>11</nochesReservadas>
+    </resumen>
+  </estadisticas>
+</hotel>

@@ -1,0 +1,6 @@
+# SISTEMA DE RESERVAS - HOTEL PARADISE
+ID;ClienteNombre;ClienteEmail;ClienteTelefono;HabitacionNum;TipoHabitacion;PrecioPorNoche;FechaEntrada;FechaSalida;Noches;PrecioTotal;Estado
+1;Juan García;juan@email.com;666111222;101;Doble;90,00;20/10/2025;23/10/2025;3;270,00;Confirmada
+2;María López;maria@email.com;777222333;205;Suite;200,00;21/10/2025;25/10/2025;4;800,00;Confirmada
+3;Pedro Torres;pedro@email.com;688555444;303;Individual;50,00;18/10/2025;20/10/2025;2;100,00;Completada
+4;Juan García;juan@email.com;666111222;303;Individual;50,00;27/10/2025;29/10/2025;2;100,00;Cancelada
