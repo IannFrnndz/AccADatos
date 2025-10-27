@@ -14,12 +14,14 @@ public class Main {
             cuenta = crearNuevaCuenta();
         }
 
-        // Ejecutar menú
+        // Delegamos toda la interacción de menús a la clase Menu
         Menu menu = new Menu(cuenta);
-        menu.menuInicial();
-
-        // Guardar cuenta al salir
-        guardarCuenta(cuenta);
+        try {
+            menu.menuInicial(); // Menu contiene ahora la opción Exportar
+        } finally {
+            // Guardar cuenta al salir o si ocurre una excepción
+            guardarCuenta(cuenta);
+        }
     }
 
     private static CuentaBancaria cargarCuenta() {

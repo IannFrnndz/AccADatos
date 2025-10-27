@@ -1,0 +1,14 @@
+# DATOS CUENTA
+Nombre Cliente;DNI;Saldo
+Ian Fernandez;5555;4.00
+
+# MOVIMIENTOS
+Tipo;Cantidad;Fecha
+Ingreso;3.00;26/10/2025 14:10
+Retirada;-2.00;26/10/2025 14:10
+Ingreso;3.00;27/10/2025 12:19
+
+# RESUMEN MOVIMIENTOS
+# Total movimientos;3
+# Total gastos;2.00
+# Total ingresos;6.00
