@@ -1,0 +1,15 @@
+CREATE DATABASE empresa;
+
+USE empresa;
+
+CREATE TABLE empleados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    salario DECIMAL(10,2)
+);
+
+INSERT INTO empleados (nombre, salario) VALUES
+('Ana', 1500.00),
+('Luis', 1800.00),
+('Marta', 2000.00),
+('Pedro', 1750.00);
