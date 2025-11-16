@@ -1,0 +1,34 @@
+CREATE DATABASE empresa;
+USE empresa;
+CREATE TABLE empleados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    salario DECIMAL(10,2)
+);
+
+CREATE TABLE proyectos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    presupuesto DECIMAL(10,2)
+);
+
+CREATE TABLE asignaciones (
+    id_empleado INT,
+    id_proyecto INT,
+    horas INT,
+    PRIMARY KEY (id_empleado, id_proyecto),
+    FOREIGN KEY (id_empleado) REFERENCES empleados(id),
+    FOREIGN KEY (id_proyecto) REFERENCES proyectos(id)
+);
+
+DELIMITER //
+CREATE PROCEDURE asignar_empleado(
+    IN empId INT,
+    IN proyId INT,
+    IN horasAsignadas INT
+)
+BEGIN
+    INSERT INTO asignaciones (id_empleado, id_proyecto, horas)
+    VALUES (empId, proyId, horasAsignadas);
+END //
+DELIMITER ;
