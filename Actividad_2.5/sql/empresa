@@ -1,0 +1,40 @@
+CREATE DATABASE empresa;
+USE empresa;
+CREATE TABLE empleados (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+salario DECIMAL(10,2)
+);
+INSERT INTO empleados (nombre, salario) VALUES
+('Ana', 1500.00),
+('Luis', 1800.00),
+('Marta', 2000.00),
+('Pedro', 1750.00);
+
+CREATE TABLE proyectos(
+id INT auto_increment primary key,
+nombre varchar(100),
+presupuesto decimal(10,2));
+
+DELIMITER $$
+
+CREATE PROCEDURE incrementar_salario (
+    IN p_id_empleado INT,
+    IN p_incremento DECIMAL(10, 2),
+    OUT p_nuevo_salario DECIMAL(10, 2)
+)
+BEGIN
+    -- 1. Actualiza el salario del empleado
+    UPDATE empleados
+    SET salario = salario + p_incremento
+    WHERE id = p_id_empleado;
+
+    -- 2. Selecciona el nuevo salario y lo asigna a la variable de salida
+    SELECT salario INTO p_nuevo_salario
+    FROM empleados
+    WHERE id = p_id_empleado;
+END $$
+
+DELIMITER ;
+
+
