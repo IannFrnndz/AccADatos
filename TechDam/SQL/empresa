@@ -1,4 +1,77 @@
-db.url=jdbc:mysql://localhost:3306/empresa
-db.user=root
-db.password=""
+CREATE DATABASE empresa;
+USE empresa;
 
+CREATE TABLE empleados (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+departamento VARCHAR(50) NOT NULL,
+salario DECIMAL(10,2) NOT NULL,
+activo BOOLEAN DEFAULT TRUE
+);
+
+INSERT INTO empleados (nombre, departamento, salario, activo) VALUES
+('Ana', 'Desarrollo', 1500.00, TRUE),
+('Luis', 'Marketing', 1800.00, TRUE),
+('Marta', 'Desarrollo', 2000.00, TRUE),
+('Pedro', 'Ventas', 1750.00, TRUE),
+('Sofía', 'Marketing', 1900.00, TRUE);
+
+CREATE TABLE proyectos (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+presupuesto DECIMAL(10,2) NOT NULL
+);
+INSERT INTO proyectos (nombre, presupuesto) VALUES
+('Proyecto A', 10000.00),
+('Proyecto B', 15000.00),
+('Proyecto C', 20000.00),
+('Proyecto D', 5000.00),
+('Proyecto E', 12000.00);
+
+CREATE TABLE asignaciones (
+id INT AUTO_INCREMENT PRIMARY KEY,
+empleado_id INT NOT NULL,
+proyecto_id INT NOT NULL,
+horas_asignadas INT NOT NULL,
+rol VARCHAR(50),
+fecha_asignacion DATE DEFAULT (CURDATE()),
+FOREIGN KEY (empleado_id) REFERENCES empleados(id),
+
+3
+
+FOREIGN KEY (proyecto_id) REFERENCES proyectos(id)
+);
+
+INSERT INTO asignaciones (empleado_id, proyecto_id, horas_asignadas,
+rol) VALUES
+(1, 1, 40, 'Desarrollador'),
+(2, 2, 35, 'Marketing'),
+(3, 1, 20, 'Desarrollador'),
+(4, 3, 30, 'Ventas'),
+(5, 2, 25, 'Marketing');
+
+DELIMITER //
+CREATE PROCEDURE asignar_empleado(
+IN empId INT,
+IN proyId INT,
+IN horasAsignadas INT
+)
+BEGIN
+INSERT INTO asignaciones (id_empleado, id_proyecto, horas)
+VALUES (empId, proyId, horasAsignadas);
+END //
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE actualizar_salario_departamento(
+IN p_departamento VARCHAR(50),
+IN p_porcentaje DECIMAL(5,2),
+OUT p_empleados_actualizados INT
+)
+BEGIN
+UPDATE empleados
+SET salario = salario * (1 + p_porcentaje / 100)
+WHERE departamento = p_departamento AND activo = TRUE;
+SET p_empleados_actualizados = ROW_COUNT();
+END$$
+DELIMITER ;

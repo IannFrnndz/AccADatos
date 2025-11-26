@@ -10,9 +10,9 @@ public class ConexionPool {
     static {
         // Configuración del pool
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/empresa"); // ⚠️ normalmente 3306, no 8080
+        config.setJdbcUrl("jdbc:mysql://localhost:8080/empresa"); // ⚠️ normalmente 3306, no 8080
         config.setUsername("root");
-        config.setPassword("");
+        config.setPassword("1234");
         config.setMaximumPoolSize(5);  // máximo de conexiones simultáneas
         config.setMinimumIdle(2);      // conexiones mínimas en espera
         config.setIdleTimeout(30000);  // tiempo de inactividad antes de liberar
@@ -35,7 +35,7 @@ public class ConexionPool {
     public static void closePool() {
         if (dataSource != null) {
             dataSource.close();
-            System.out.println("🔒 Pool cerrado correctamente");
+            System.out.println("Pool cerrado correctamente");
         }
     }
 }
