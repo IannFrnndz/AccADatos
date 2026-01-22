@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html(titulo=${titulo})}">
+
+<th:block th:fragment="contenido">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi" th:classappend="${producto.id == null} ? 'bi-plus-circle' : 'bi-pencil'"></i>
+                        <span th:text="${titulo}">Formulario</span>
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <form th:action="${accion}" th:object="${producto}" method="post">
+                        <!-- ID oculto para edición -->
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Nombre del producto">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                                 th:errors="*{nombre}">Error</div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control"
+                                      id="descripcion"
+                                      th:field="*{descripcion}"
+                                      rows="3"
+                                      placeholder="Descripción opcional"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}"
+                                 th:errors="*{descripcion}">Error</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Precio -->
+                            <div class="col-md-4 mb-3">
+                                <label for="precio" class="form-label">Precio (€) *</label>
+                                <input type="number"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('precio')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="precio"
+                                       th:field="*{precio}"
+                                       step="0.01" min="0.01"
+                                       placeholder="0.00">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}"
+                                     th:errors="*{precio}">Error</div>
+                            </div>
+
+                            <!-- Stock -->
+                            <div class="col-md-4 mb-3">
+                                <label for="stock" class="form-label">Stock *</label>
+                                <input type="number"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('stock')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="stock"
+                                       th:field="*{stock}"
+                                       min="0"
+                                       placeholder="0">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}"
+                                     th:errors="*{stock}">Error</div>
+                            </div>
+
+                            <!-- Categoría -->
+                            <div class="col-md-4 mb-3">
+                                <label for="categoria" class="form-label">Categoría *</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('categoria')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="categoria"
+                                       th:field="*{categoria}"
+                                       list="listaCategorias"
+                                       placeholder="Categoría">
+                                <datalist id="listaCategorias">
+                                    <option th:each="cat : ${categorias}" th:value="${cat}">
+                                </datalist>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('categoria')}"
+                                     th:errors="*{categoria}">Error</div>
+                            </div>
+                        </div>
+
+                        <!-- Activo (solo visible en edición) -->
+                        <div class="mb-3 form-check" th:if="${producto.id != null}">
+                            <input type="checkbox" class="form-check-input"
+                                   id="activo" th:field="*{activo}">
+                            <label class="form-check-label" for="activo">Producto activo</label>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Guardar
+                            </button>
+                            <a th:href="@{/productos}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

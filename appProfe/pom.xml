@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot Parent: gestiona versiones de dependencias -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.1</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>es.campusfp</groupId>
+	<artifactId>webapp-springboot</artifactId>
+	<version>1.0.0</version>
+	<name>Aplicación Web Spring Boot</name>
+	<description>Proyecto de ejemplo - Acceso a Datos RA3</description>
+
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+
+	<dependencies>
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- SPRING WEB: Controladores MVC, manejo de peticiones HTTP    -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- THYMELEAF: Motor de plantillas HTML para vistas dinámicas   -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- SPRING DATA JPA: Repositorios y persistencia con Hibernate  -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- MYSQL CONNECTOR: Driver JDBC para conectar con MySQL        -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- LOMBOK: Genera automáticamente getters, setters, etc.       -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- VALIDATION: Validación de formularios con anotaciones       -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- DEVTOOLS: Reinicio automático durante desarrollo            -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<!-- TEST: Pruebas unitarias e integración                       -->
+		<!-- ═══════════════════════════════════════════════════════════ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
