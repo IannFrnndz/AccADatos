@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Usuario</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<h1>Bienvenido, <span th:text="${usuario.username}"></span></h1>
+
+<a href="/logout">Cerrar sesión</a>
+
+<h2>Tus datos</h2>
+<p><b>Email:</b> <span th:text="${usuario.email}"></span></p>
+<p><b>Activo:</b> <span th:text="${usuario.activo}"></span></p>
+<p><b>Último login:</b> <span th:text="${usuario.ultimoLogin}"></span></p>
+
+<h2>Cambiar contraseña</h2>
+<form action="/usuario/cambiar-password" method="post">
+    <label>Contraseña actual:</label>
+    <input type="password" name="actual" required><br><br>
+
+    <label>Nueva contraseña:</label>
+    <input type="password" name="nueva" required><br><br>
+
+    <button type="submit">Cambiar contraseña</button>
+</form>
+</body>
+</html>

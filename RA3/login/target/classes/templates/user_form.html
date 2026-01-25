@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${esNuevo} ? 'Nuevo Usuario' : 'Editar Usuario'"></title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 20px;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffeaa7;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 12px;
+            outline: none;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.85);
+            color: #333;
+        }
+
+        input[type="text"]:read-only {
+            background: rgba(0, 0, 0, 0.1);
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 6px;
+        }
+
+        select {
+            appearance: none;
+            background: rgba(255, 255, 255, 0.85);
+            color: #333;
+        }
+
+        .btn {
+            padding: 0.85rem 1.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: #333;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2 th:text="${esNuevo} ? 'Crear Nuevo Usuario' : 'Editar Usuario'"></h2>
+
+    <form th:action="${esNuevo} ? @{/admin/usuarios} : @{/admin/usuarios/editar/{id}(id=${usuario.id})}"
+          th:object="${usuario}"
+          method="post">
+
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" th:field="*{username}" required />
+        </div>
+
+        <div class="form-group" th:if="${esNuevo}">
+            <label for="password">Password:</label>
+            <input type="password" id="password" th:field="*{password}" required />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email"
+                   th:value="${esNuevo} ? *{email} : ${usuario.email}"
+                   name="email" required />
+        </div>
+
+        <div class="form-group">
+            <label for="rol">Rol:</label>
+            <select id="rol" name="rolNombre">
+                <option th:each="rol : ${roles}"
+                        th:value="${rol.nombre}"
+                        th:text="${rol.nombre}"
+                        th:selected="${usuario.roles != null && !usuario.roles.isEmpty() && usuario.roles.iterator().next().nombre == rol.nombre}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox"
+                       th:checked="${esNuevo} ? true : ${usuario.activo}"
+                       name="activo" value="true" />
+                Activo
+            </label>
+        </div>
+
+        <div>
+            <button type="submit" class="btn">Guardar</button>
+            <a th:href="@{/admin/usuarios}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
