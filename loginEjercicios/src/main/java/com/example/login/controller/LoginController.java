@@ -1,8 +1,7 @@
 package com.example.login.controller;
 
-
-import com.example.login.service.UsuarioService;
 import com.example.login.entity.Usuario;
+import com.example.login.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,16 +18,23 @@ public class LoginController {
     // Mostrar la página de login
     @GetMapping("/login")
     public String mostrarLogin(@RequestParam(value = "error", required = false) String error, Model model) {
-        model.addAttribute("error", error != null);
+        if (error != null) {
+            model.addAttribute("error", true); // Mostrar mensaje de error si hay fallo
+        }
         return "login";
     }
 
+    // Procesar formulario de login
     @PostMapping("/login")
     public String procesarLogin(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             Model model
     ) {
+        // Eliminar espacios en blanco
+        username = username.trim();
+        password = password.trim();
+
         Optional<Usuario> usuarioOpt = usuarioService.verificarCredenciales(username, password);
 
         if (usuarioOpt.isPresent()) {
@@ -38,12 +44,5 @@ public class LoginController {
         } else {
             return "redirect:/login?error=true";
         }
-    }
-
-    // Redirigir /logout (opcional)
-    @GetMapping("/logout")
-    public String logout() {
-        // Aquí podrías limpiar la sesión del usuario si usas sesiones
-        return "redirect:/login";
     }
 }
