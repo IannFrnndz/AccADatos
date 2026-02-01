@@ -1,0 +1,42 @@
+/*
+ Este archivo collection.xconf define los índices de la colección /db/biblioteca/libros
+ en eXist-db. Se colocaría en:
+ /db/system/config/db/biblioteca/libros
+ para que eXist-db lo use al reindexar la colección.
+*/
+
+
+<collection xmlns="http://exist-db.org/collection-config/1.0">
+    <index xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+        <!-- Indice de rango para busquedas exactas -->
+        <range>
+            <!-- Titulo - busquedas por igualdad y starts-with -->
+            <create qname="titulo" type="xs:string"/>
+
+            <!-- Ano - busquedas numericas -->
+            <create qname="anio" type="xs:integer"/>
+
+            <!-- ISBN - busquedas exactas -->
+            <create qname="isbn" type="xs:string"/>
+
+            <!-- Atributo id -->
+            <create qname="@id" type="xs:string"/>
+        </range>
+
+        <!-- Indice Lucene para full-text -->
+        <lucene>
+            <analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
+
+            <!-- Indexar titulo para full-text -->
+            <text qname="titulo" boost="2.0"/>
+
+            <!-- Indexar autor -->
+            <text qname="autor"/>
+
+            <!-- Indexar todo el libro -->
+            <text qname="libro"/>
+        </lucene>
+
+    </index>
+</collection>
