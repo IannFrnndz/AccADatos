@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/header :: header('Dashboard - Centro Médico')}"></th:block>
+</head>
+<body>
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+    <div class="container">
+        <!-- Título de bienvenida -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="display-5">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </h1>
+                <p class="lead">
+                    Bienvenido, <strong th:text="${usuario.nombre}">Usuario</strong>
+                    <span class="badge bg-primary badge-role" th:text="${usuario.rol}">ROL</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Estadísticas para ADMIN -->
+        <div sec:authorize="hasRole('ADMIN')" class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title">Total Pacientes</h5>
+                                <h2 class="mb-0" th:text="${totalPacientes}">0</h2>
+                            </div>
+                            <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title">Total Médicos</h5>
+                                <h2 class="mb-0" th:text="${totalMedicos}">0</h2>
+                            </div>
+                            <i class="bi bi-person-badge" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas para MEDICO -->
+        <div sec:authorize="hasRole('MEDICO')" class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title">Mis Pacientes</h5>
+                                <h2 class="mb-0" th:text="${misPacientes}">0</h2>
+                            </div>
+                            <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-lightning"></i> Accesos Rápidos
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Para ADMIN y RECEPCION -->
+                            <div sec:authorize="hasAnyRole('ADMIN', 'RECEPCION')" class="col-md-4 mb-3">
+                                <a href="/pacientes" class="btn btn-outline-primary w-100 p-3">
+                                    <i class="bi bi-list-ul" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 mt-2">Ver Todos los Pacientes</p>
+                                </a>
+                            </div>
+
+                            <!-- Para MEDICO -->
+                            <div sec:authorize="hasRole('MEDICO')" class="col-md-4 mb-3">
+                                <a href="/pacientes/mis-pacientes" class="btn btn-outline-primary w-100 p-3">
+                                    <i class="bi bi-list-ul" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 mt-2">Ver Mis Pacientes</p>
+                                </a>
+                            </div>
+
+                            <!-- Crear paciente (ADMIN y MEDICO) -->
+                            <div sec:authorize="hasAnyRole('ADMIN', 'MEDICO')" class="col-md-4 mb-3">
+                                <a href="/pacientes/nuevo" class="btn btn-outline-success w-100 p-3">
+                                    <i class="bi bi-person-plus" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 mt-2">Nuevo Paciente</p>
+                                </a>
+                            </div>
+
+                            <!-- Gestionar usuarios (solo ADMIN) -->
+                            <div sec:authorize="hasRole('ADMIN')" class="col-md-4 mb-3">
+                                <a href="/usuarios" class="btn btn-outline-warning w-100 p-3">
+                                    <i class="bi bi-person-gear" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 mt-2">Gestionar Usuarios</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/header :: header('Detalle del Usuario')}"></th:block>
+</head>
+<body>
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="display-5">
+                    <i class="bi bi-person-badge-fill"></i> Detalle del Usuario
+                </h1>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="/usuarios" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                <a th:href="@{/usuarios/editar/{id}(id=${usuarioDetalle.id})}"
+                   class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+            </div>
+        </div>
+
+        <!-- Información del Usuario -->
+        <div class="row">
+            <!-- Datos Personales -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person-lines-fill"></i> Datos Personales
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%"><i class="bi bi-hash"></i> ID:</th>
+                                <td th:text="${usuarioDetalle.id}">1</td>
+                            </tr>
+                            <tr>
+                                <th><i class="bi bi-person-circle"></i> Username:</th>
+                                <td><strong th:text="${usuarioDetalle.username}">username</strong></td>
+                            </tr>
+                            <tr>
+                                <th><i class="bi bi-person"></i> Nombre:</th>
+                                <td><strong th:text="${usuarioDetalle.nombre}">Nombre</strong></td>
+                            </tr>
+                            <tr>
+                                <th><i class="bi bi-envelope"></i> Email:</th>
+                                <td th:text="${usuarioDetalle.email}">email@ejemplo.com</td>
+                            </tr>
+                            <tr>
+                                <th><i class="bi bi-calendar-plus"></i> Fecha Registro:</th>
+                                <td th:text="${#temporals.format(usuarioDetalle.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                                    Fecha
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rol y Estado -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-shield-check"></i> Rol y Permisos
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%"><i class="bi bi-person-badge"></i> Rol:</th>
+                                <td>
+                                        <span th:if="${usuarioDetalle.rol.name() == 'ADMIN'}" class="badge bg-danger fs-6">
+                                            <i class="bi bi-shield-check"></i> ADMINISTRADOR
+                                        </span>
+                                    <span th:if="${usuarioDetalle.rol.name() == 'MEDICO'}" class="badge bg-success fs-6">
+                                            <i class="bi bi-person-badge"></i> MÉDICO
+                                        </span>
+                                    <span th:if="${usuarioDetalle.rol.name() == 'RECEPCION'}" class="badge bg-warning text-dark fs-6">
+                                            <i class="bi bi-person"></i> RECEPCIÓN
+                                        </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="bi bi-toggle-on"></i> Estado:</th>
+                                <td>
+                                        <span th:if="${usuarioDetalle.activo}" class="badge bg-success fs-6">
+                                            <i class="bi bi-check-circle"></i> Activo
+                                        </span>
+                                    <span th:unless="${usuarioDetalle.activo}" class="badge bg-secondary fs-6">
+                                            <i class="bi bi-x-circle"></i> Inactivo
+                                        </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${usuarioDetalle.rol.name() == 'MEDICO'}">
+                                <th><i class="bi bi-people"></i> Pacientes:</th>
+                                <td>
+                                        <span class="badge bg-info fs-6" th:text="${cantidadPacientes} + ' pacientes'">
+                                            0 pacientes
+                                        </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permisos según el rol -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <i class="bi bi-list-check"></i> Permisos y Accesos
+                    </div>
+                    <div class="card-body">
+                        <!-- ADMIN -->
+                        <div th:if="${usuarioDetalle.rol.name() == 'ADMIN'}">
+                            <h6 class="text-danger"><i class="bi bi-shield-check"></i> Permisos de ADMINISTRADOR</h6>
+                            <ul>
+                                <li><i class="bi bi-check-circle text-success"></i> Acceso total al sistema</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Gestionar todos los usuarios</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Ver todos los pacientes</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Crear, editar y eliminar pacientes</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Asignar/reasignar médicos a pacientes</li>
+                            </ul>
+                        </div>
+
+                        <!-- MEDICO -->
+                        <div th:if="${usuarioDetalle.rol.name() == 'MEDICO'}">
+                            <h6 class="text-success"><i class="bi bi-person-badge"></i> Permisos de MÉDICO</h6>
+                            <ul>
+                                <li><i class="bi bi-check-circle text-success"></i> Ver solo sus pacientes asignados</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Crear nuevos pacientes (se autoasignan)</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Editar solo sus pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede ver pacientes de otros médicos</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede eliminar pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede gestionar usuarios</li>
+                            </ul>
+                        </div>
+
+                        <!-- RECEPCION -->
+                        <div th:if="${usuarioDetalle.rol.name() == 'RECEPCION'}">
+                            <h6 class="text-warning"><i class="bi bi-person"></i> Permisos de RECEPCIÓN</h6>
+                            <ul>
+                                <li><i class="bi bi-check-circle text-success"></i> Ver todos los pacientes (solo lectura)</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Consultar información de pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede crear pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede editar pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede eliminar pacientes</li>
+                                <li><i class="bi bi-x-circle text-danger"></i> No puede gestionar usuarios</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de pacientes del médico -->
+        <div th:if="${usuarioDetalle.rol.name() == 'MEDICO' and cantidadPacientes > 0}" class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-people-fill"></i> Pacientes Asignados
+                    </div>
+                    <div class="card-body">
+                        <p>Este médico tiene <strong th:text="${cantidadPacientes}">0</strong> pacientes asignados.</p>
+                        <a th:href="@{/pacientes(medicoId=${usuarioDetalle.id})}" class="btn btn-info">
+                            <i class="bi bi-eye"></i> Ver pacientes de este médico
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones adicionales -->
+        <div class="row mt-3">
+            <div class="col text-end">
+                <!-- Activar/Desactivar -->
+                <form th:action="@{/usuarios/toggle-estado/{id}(id=${usuarioDetalle.id})}"
+                      method="post"
+                      style="display: inline;"
+                      th:if="${usuarioDetalle.id != usuario.id}">
+                    <button type="submit"
+                            th:class="${usuarioDetalle.activo ? 'btn btn-warning' : 'btn btn-success'}">
+                        <i th:class="${usuarioDetalle.activo ? 'bi bi-pause-circle' : 'bi bi-play-circle'}"></i>
+                        <span th:text="${usuarioDetalle.activo ? 'Desactivar Usuario' : 'Activar Usuario'}">
+                                Cambiar Estado
+                            </span>
+                    </button>
+                </form>
+
+                <!-- Eliminar -->
+                <form th:action="@{/usuarios/eliminar/{id}(id=${usuarioDetalle.id})}"
+                      method="post"
+                      style="display: inline;"
+                      th:if="${usuarioDetalle.id != usuario.id}"
+                      onsubmit="return confirm('¿Está seguro de eliminar este usuario? Esta acción marcará el usuario como inactivo.');">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar Usuario
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/header :: header('Gestión de Usuarios')}"></th:block>
+</head>
+<body>
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="display-5">
+                    <i class="bi bi-person-gear"></i> Gestión de Usuarios
+                </h1>
+                <p class="lead text-muted">Administración de usuarios del sistema</p>
+                <span class="badge bg-danger">Solo ADMIN</span>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="/usuarios/nuevo" class="btn btn-success btn-lg">
+                    <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h6>Total Usuarios</h6>
+                        <h3 th:text="${usuarios.size()}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h6>Administradores</h6>
+                        <h3 th:text="${totalAdmins}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h6>Médicos</h6>
+                        <h3 th:text="${totalMedicos}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h6>Recepción</h6>
+                        <h3 th:text="${totalRecepcion}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Usuarios -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-table"></i> Lista de Usuarios
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Pacientes</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="u : ${usuarios}">
+                            <td th:text="${u.id}">#</td>
+                            <td>
+                                <strong th:text="${u.username}">username</strong>
+                            </td>
+                            <td th:text="${u.nombre}">Nombre</td>
+                            <td>
+                                <i class="bi bi-envelope"></i>
+                                <small th:text="${u.email}">email</small>
+                            </td>
+                            <td>
+                                        <span th:if="${u.rol.name() == 'ADMIN'}" class="badge bg-danger">
+                                            <i class="bi bi-shield-check"></i> ADMIN
+                                        </span>
+                                <span th:if="${u.rol.name() == 'MEDICO'}" class="badge bg-success">
+                                            <i class="bi bi-person-badge"></i> MÉDICO
+                                        </span>
+                                <span th:if="${u.rol.name() == 'RECEPCION'}" class="badge bg-warning text-dark">
+                                            <i class="bi bi-person"></i> RECEPCIÓN
+                                        </span>
+                            </td>
+                            <td>
+                                        <span th:if="${u.activo}" class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Activo
+                                        </span>
+                                <span th:unless="${u.activo}" class="badge bg-secondary">
+                                            <i class="bi bi-x-circle"></i> Inactivo
+                                        </span>
+                            </td>
+                            <td>
+                                        <span th:if="${u.rol.name() == 'MEDICO'}"
+                                              class="badge bg-info"
+                                              th:attr="data-id=${u.id}">
+                                            <i class="bi bi-people"></i>
+                                            <span th:text="${#lists.size(u.pacientes)}">0</span> pacientes
+                                        </span>
+                                <span th:unless="${u.rol.name() == 'MEDICO'}" class="text-muted">-</span>
+                            </td>
+                            <td class="text-center">
+                                <!-- Ver detalle -->
+                                <a th:href="@{/usuarios/ver/{id}(id=${u.id})}"
+                                   class="btn btn-sm btn-info btn-action"
+                                   title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <!-- Editar -->
+                                <a th:href="@{/usuarios/editar/{id}(id=${u.id})}"
+                                   class="btn btn-sm btn-warning btn-action"
+                                   title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <!-- Activar/Desactivar -->
+                                <form th:action="@{/usuarios/toggle-estado/{id}(id=${u.id})}"
+                                      method="post"
+                                      style="display: inline;"
+                                      th:if="${u.id != usuario.id}">
+                                    <button type="submit"
+                                            th:class="${u.activo ? 'btn btn-sm btn-secondary btn-action' : 'btn btn-sm btn-success btn-action'}"
+                                            th:title="${u.activo ? 'Desactivar' : 'Activar'}">
+                                        <i th:class="${u.activo ? 'bi bi-pause-circle' : 'bi bi-play-circle'}"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Eliminar -->
+                                <form th:action="@{/usuarios/eliminar/{id}(id=${u.id})}"
+                                      method="post"
+                                      style="display: inline;"
+                                      th:if="${u.id != usuario.id}"
+                                      onsubmit="return confirm('¿Está seguro de desactivar este usuario?');">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger btn-action"
+                                            title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Indicador de usuario actual -->
+                                <span th:if="${u.id == usuario.id}"
+                                      class="badge bg-info"
+                                      title="Este es tu usuario">
+                                            <i class="bi bi-person-check"></i> Tú
+                                        </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>

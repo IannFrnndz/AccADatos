@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${esNueva} ? 'Nueva Cita' : 'Editar Cita'">Formulario de Cita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">Centro Medico</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/pacientes">Pacientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/citas">Citas</a>
+                </li>
+                <li class="nav-item" th:if="${usuario.rol.name() == 'ADMIN'}">
+                    <a class="nav-link" href="/usuarios">Usuarios</a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${usuario.nombre}">Usuario</span>
+                (<span th:text="${usuario.rol}">ROL</span>)
+            </span>
+            <form action="/logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar Sesion</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Mensajes de error -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${error}">Mensaje de error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Encabezado -->
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-calendar-plus"></i>
+            <span th:text="${esNueva} ? 'Agendar Nueva Cita' : 'Editar Cita'">Formulario de Cita</span>
+        </h2>
+    </div>
+
+    <!-- Formulario -->
+    <div class="card">
+        <div class="card-body">
+            <form th:action="${esNueva} ? @{/citas/crear} : @{/citas/actualizar/{id}(id=${cita.id})}"
+                  method="post">
+
+                <div class="row">
+                    <!-- Paciente -->
+                    <div class="col-md-6 mb-3">
+                        <label for="pacienteId" class="form-label">
+                            <i class="bi bi-person"></i> Paciente *
+                        </label>
+                        <select class="form-select" id="pacienteId" name="pacienteId" required
+                                th:disabled="${!esNueva}">
+                            <option value="">-- Seleccione un paciente --</option>
+                            <option th:each="p : ${pacientes}"
+                                    th:value="${p.id}"
+                                    th:text="${p.nombreCompleto}"
+                                    th:selected="${cita.paciente != null and cita.paciente.id == p.id}">
+                                Paciente
+                            </option>
+                        </select>
+                        <input type="hidden" name="pacienteId" th:if="${!esNueva}" th:value="${cita.paciente.id}">
+                    </div>
+
+                    <!-- Médico -->
+                    <div class="col-md-6 mb-3">
+                        <label for="medicoId" class="form-label">
+                            <i class="bi bi-person-badge"></i> Medico *
+                        </label>
+                        <select class="form-select" id="medicoId" name="medicoId" required
+                                th:disabled="${usuario.rol.name() == 'MEDICO' or !esNueva}">
+                            <option value="">-- Seleccione un medico --</option>
+                            <option th:each="m : ${medicos}"
+                                    th:value="${m.id}"
+                                    th:text="${m.nombre}"
+                                    th:selected="${cita.medico != null and cita.medico.id == m.id}">
+                                Medico
+                            </option>
+                        </select>
+                        <input type="hidden" name="medicoId"
+                               th:if="${usuario.rol.name() == 'MEDICO' or !esNueva}"
+                               th:value="${cita.medico.id}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Fecha -->
+                    <div class="col-md-4 mb-3">
+                        <label for="fecha" class="form-label">
+                            <i class="bi bi-calendar"></i> Fecha *
+                        </label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" required
+                               th:value="${cita.fechaHora != null} ? ${#temporals.format(cita.fechaHora, 'yyyy-MM-dd')} : ''">
+                    </div>
+
+                    <!-- Hora -->
+                    <div class="col-md-4 mb-3">
+                        <label for="hora" class="form-label">
+                            <i class="bi bi-clock"></i> Hora *
+                        </label>
+                        <input type="time" class="form-control" id="hora" name="hora" required
+                               th:value="${cita.fechaHora != null} ? ${#temporals.format(cita.fechaHora, 'HH:mm')} : '09:00'">
+                    </div>
+
+                    <!-- Duración -->
+                    <div class="col-md-4 mb-3">
+                        <label for="duracionMinutos" class="form-label">
+                            <i class="bi bi-hourglass-split"></i> Duracion (minutos) *
+                        </label>
+                        <select class="form-select" id="duracionMinutos" name="duracionMinutos" required>
+                            <option value="15" th:selected="${cita.duracionMinutos == 15}">15 minutos</option>
+                            <option value="30" th:selected="${cita.duracionMinutos == 30}">30 minutos</option>
+                            <option value="45" th:selected="${cita.duracionMinutos == 45}">45 minutos</option>
+                            <option value="60" th:selected="${cita.duracionMinutos == 60}">1 hora</option>
+                            <option value="90" th:selected="${cita.duracionMinutos == 90}">1 hora 30 min</option>
+                            <option value="120" th:selected="${cita.duracionMinutos == 120}">2 horas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Motivo -->
+                <div class="mb-3">
+                    <label for="motivo" class="form-label">
+                        <i class="bi bi-chat-left-text"></i> Motivo de la Cita *
+                    </label>
+                    <textarea class="form-control" id="motivo" name="motivo" rows="3" required
+                              maxlength="500" th:text="${cita.motivo}"></textarea>
+                    <div class="form-text">Maximo 500 caracteres</div>
+                </div>
+
+                <!-- Observaciones (solo si está editando) -->
+                <div class="mb-3" th:if="${!esNueva}">
+                    <label for="observaciones" class="form-label">
+                        <i class="bi bi-sticky"></i> Observaciones
+                    </label>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3"
+                              th:text="${cita.observaciones}"></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Nota:</strong> El sistema validara automaticamente que no haya conflictos de horarios con otras citas.
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <a th:href="${esNueva} ? @{/citas} : @{/citas/ver/{id}(id=${cita.id})}"
+                       class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        <span th:text="${esNueva} ? 'Agendar Cita' : 'Guardar Cambios'">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Establecer fecha mínima a mañana
+    const fechaInput = document.getElementById('fecha');
+    const manana = new Date();
+    manana.setDate(manana.getDate() + 1);
+    const mananaStr = manana.toISOString().split('T')[0];
+    fechaInput.setAttribute('min', mananaStr);
+</script>
+</body>
+</html>

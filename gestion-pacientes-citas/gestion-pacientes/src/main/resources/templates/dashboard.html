@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Centro Medico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-hospital"></i> Centro Medico
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/pacientes">
+                        <i class="bi bi-people"></i> Pacientes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/citas">
+                        <i class="bi bi-calendar-check"></i> Citas
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${usuario.rol.name() == 'ADMIN'}">
+                    <a class="nav-link" href="/usuarios">
+                        <i class="bi bi-person-gear"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${usuario.nombre}">Usuario</span>
+                (<span th:text="${usuario.rol}">ROL</span>)
+            </span>
+            <form action="/logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- ENCABEZADO -->
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-speedometer2"></i>
+            Dashboard -
+            <span th:text="${usuario.rol.name() == 'ADMIN'} ? 'Administrador' : (${usuario.rol.name() == 'MEDICO'} ? 'Medico' : 'Recepcion')">
+                Panel
+            </span>
+        </h2>
+        <p class="text-muted">
+            Bienvenido/a, <strong th:text="${usuario.nombre}">Usuario</strong>
+        </p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DASHBOARD PARA ADMIN -->
+    <!-- ============================================ -->
+    <div th:if="${usuario.rol.name() == 'ADMIN'}">
+        <h4 class="mb-3">Estadisticas Generales</h4>
+
+        <div class="row mb-4">
+            <!-- Total Pacientes -->
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people text-primary" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${totalPacientes}">0</h3>
+                        <p class="text-muted mb-0">Total Pacientes</p>
+                        <a href="/pacientes" class="btn btn-sm btn-outline-primary mt-2">Ver pacientes</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Medicos -->
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person-badge text-success" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${totalMedicos}">0</h3>
+                        <p class="text-muted mb-0">Medicos</p>
+                        <a href="/usuarios" class="btn btn-sm btn-outline-success mt-2">Ver usuarios</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citas Pendientes -->
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history text-warning" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${citasPendientes}">0</h3>
+                        <p class="text-muted mb-0">Citas Pendientes</p>
+                        <a href="/citas/estado/PENDIENTE" class="btn btn-sm btn-outline-warning mt-2">Ver citas</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citas Confirmadas -->
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info">
+                    <div class="card-body text-center">
+                        <i class="bi bi-check-circle text-info" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${citasConfirmadas}">0</h3>
+                        <p class="text-muted mb-0">Citas Confirmadas</p>
+                        <a href="/citas/estado/CONFIRMADA" class="btn btn-sm btn-outline-info mt-2">Ver citas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ultimas Citas Pendientes -->
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Citas Pendientes de Confirmacion
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${ultimasCitas.isEmpty()}" class="text-center py-3 text-muted">
+                    <p class="mb-0">No hay citas pendientes</p>
+                </div>
+                <div th:if="${!ultimasCitas.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>Paciente</th>
+                            <th>Medico</th>
+                            <th>Motivo</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="cita : ${ultimasCitas}">
+                            <td th:text="${cita.fechaHoraFormateada}">01/01/2026 10:00</td>
+                            <td th:text="${cita.paciente.nombreCompleto}">Paciente</td>
+                            <td th:text="${cita.medico.nombre}">Medico</td>
+                            <td th:text="${#strings.abbreviate(cita.motivo, 40)}">Motivo</td>
+                            <td>
+                                <a th:href="@{/citas/ver/{id}(id=${cita.id})}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/citas" class="btn btn-primary mt-2">
+                    <i class="bi bi-calendar-check"></i> Ver todas las citas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DASHBOARD PARA MEDICO -->
+    <!-- ============================================ -->
+    <div th:if="${usuario.rol.name() == 'MEDICO'}">
+        <h4 class="mb-3">Mi Panel</h4>
+
+        <div class="row mb-4">
+            <!-- Mis Pacientes -->
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card border-primary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people text-primary" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${misPacientes}">0</h3>
+                        <p class="text-muted mb-0">Mis Pacientes</p>
+                        <a href="/pacientes" class="btn btn-sm btn-outline-primary mt-2">Ver pacientes</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citas Activas -->
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check text-success" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${misCitasActivas}">0</h3>
+                        <p class="text-muted mb-0">Citas Activas</p>
+                        <a href="/citas" class="btn btn-sm btn-outline-success mt-2">Ver citas</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citas de Hoy -->
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card border-warning">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-event text-warning" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${#lists.size(miAgendaHoy)}">0</h3>
+                        <p class="text-muted mb-0">Citas de Hoy</p>
+                        <a href="/citas/mi-agenda" class="btn btn-sm btn-outline-warning mt-2">Ver agenda</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mi Agenda de Hoy -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-day"></i>
+                    Mi Agenda de Hoy
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${miAgendaHoy.isEmpty()}" class="text-center py-3 text-muted">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                    <p class="mb-0 mt-2">No tienes citas para hoy</p>
+                </div>
+                <div th:if="${!miAgendaHoy.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="cita : ${miAgendaHoy}">
+                            <td><strong th:text="${cita.rangoHorario}">10:00 - 10:30</strong></td>
+                            <td th:text="${cita.paciente.nombreCompleto}">Paciente</td>
+                            <td th:text="${#strings.abbreviate(cita.motivo, 40)}">Motivo</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${cita.estado.name() == 'PENDIENTE'} ? 'bg-warning text-dark' :${cita.estado.name() == 'CONFIRMADA'} ? 'bg-success' :${cita.estado.name() == 'COMPLETADA'} ? 'bg-primary' : 'bg-danger'" th:text="${cita.estado.descripcion}">
+                                    Estado
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/citas/ver/{id}(id=${cita.id})}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/citas/mi-agenda" class="btn btn-primary mt-2">
+                    <i class="bi bi-calendar3"></i> Ver agenda completa
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DASHBOARD PARA RECEPCION -->
+    <!-- ============================================ -->
+    <div th:if="${usuario.rol.name() == 'RECEPCION'}">
+        <h4 class="mb-3">Panel de Recepcion</h4>
+
+        <div class="row mb-4">
+            <!-- Citas Pendientes -->
+            <div class="col-md-6 mb-3">
+                <div class="card stat-card border-warning">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history text-warning" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${citasPendientes}">0</h3>
+                        <p class="text-muted mb-0">Citas Pendientes</p>
+                        <a href="/citas" class="btn btn-sm btn-outline-warning mt-2">Gestionar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citas Confirmadas Hoy -->
+            <div class="col-md-6 mb-3">
+                <div class="card stat-card border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check text-success" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2" th:text="${citasConfirmadasHoy}">0</h3>
+                        <p class="text-muted mb-0">Citas Confirmadas Hoy</p>
+                        <a href="/citas/estado/CONFIRMADA" class="btn btn-sm btn-outline-success mt-2">Ver citas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Citas Pendientes de Confirmacion -->
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Citas Pendientes de Confirmacion
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${listaCitasPendientes.isEmpty()}" class="text-center py-3 text-muted">
+                    <p class="mb-0">No hay citas pendientes</p>
+                </div>
+                <div th:if="${!listaCitasPendientes.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>Paciente</th>
+                            <th>Medico</th>
+                            <th>Motivo</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="cita : ${listaCitasPendientes}">
+                            <td th:text="${cita.fechaHoraFormateada}">01/01/2026 10:00</td>
+                            <td th:text="${cita.paciente.nombreCompleto}">Paciente</td>
+                            <td th:text="${cita.medico.nombre}">Medico</td>
+                            <td th:text="${#strings.abbreviate(cita.motivo, 40)}">Motivo</td>
+                            <td>
+                                <a th:href="@{/citas/ver/{id}(id=${cita.id})}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form th:action="@{/citas/confirmar/{id}(id=${cita.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success"
+                                            title="Confirmar cita">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <a href="/citas/nueva" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Agendar Nueva Cita
+                    </a>
+                    <a href="/citas/medicos" class="btn btn-info">
+                        <i class="bi bi-calendar3"></i> Ver Agendas de Medicos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

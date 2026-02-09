@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/header :: header(${usuarioForm.id == null ? 'Nuevo Usuario' : 'Editar Usuario'})}"></th:block>
+</head>
+<body>
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="display-5">
+                    <i th:class="${usuarioForm.id == null ? 'bi bi-person-plus-fill' : 'bi bi-pencil-square'}"></i>
+                    <span th:text="${usuarioForm.id == null ? 'Nuevo Usuario' : 'Editar Usuario'}">Formulario</span>
+                </h1>
+                <p class="lead text-muted" th:text="${usuarioForm.id == null ? 'Complete los datos del nuevo usuario' : 'Modifique los datos del usuario'}">
+                    Descripción
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="/usuarios" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-card-text"></i> Datos del Usuario
+            </div>
+            <div class="card-body">
+                <form th:action="@{${usuarioForm.id == null ? '/usuarios/crear' : '/usuarios/actualizar/' + usuarioForm.id}}"
+                      th:object="${usuarioForm}"
+                      method="post">
+
+                    <!-- ID oculto (solo si es edición) -->
+                    <input type="hidden" th:field="*{id}" th:if="${usuarioForm.id != null}">
+
+                    <!-- Sección: Información de Acceso -->
+                    <h5 class="mb-3 text-primary">
+                        <i class="bi bi-key-fill"></i> Información de Acceso
+                    </h5>
+
+                    <div class="row">
+                        <!-- Username -->
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">
+                                <i class="bi bi-person-circle"></i> Username <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="username"
+                                   th:field="*{username}"
+                                   placeholder="Ingrese el username"
+                                   required
+                                   maxlength="50"
+                                   pattern="[a-zA-Z0-9._-]+"
+                                   title="Solo letras, números, punto, guión bajo y guión">
+                            <div class="form-text">Solo letras, números, punto (.), guión bajo (_) y guión (-)</div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   th:field="*{email}"
+                                   placeholder="usuario@ejemplo.com"
+                                   required
+                                   maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Contraseña -->
+                        <div class="col-md-12 mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Contraseña
+                                <span th:if="${usuarioForm.id == null}" class="text-danger">*</span>
+                                <span th:if="${usuarioForm.id != null}" class="text-muted">(dejar en blanco para no cambiar)</span>
+                            </label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Ingrese la contraseña"
+                                   th:required="${usuarioForm.id == null}"
+                                   minlength="4"
+                                   maxlength="255">
+                            <div class="form-text">
+                                <span th:if="${usuarioForm.id == null}">Mínimo 4 caracteres</span>
+                                <span th:if="${usuarioForm.id != null}">Solo complete este campo si desea cambiar la contraseña</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Sección: Datos Personales -->
+                    <h5 class="mb-3 text-info">
+                        <i class="bi bi-person-lines-fill"></i> Datos Personales
+                    </h5>
+
+                    <div class="row">
+                        <!-- Nombre -->
+                        <div class="col-md-12 mb-3">
+                            <label for="nombre" class="form-label">
+                                <i class="bi bi-person"></i> Nombre Completo <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Ingrese el nombre completo"
+                                   required
+                                   maxlength="100">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Sección: Rol y Estado -->
+                    <h5 class="mb-3 text-warning">
+                        <i class="bi bi-shield-check"></i> Rol y Estado
+                    </h5>
+
+                    <div class="row">
+                        <!-- Rol -->
+                        <div class="col-md-6 mb-3">
+                            <label for="rol" class="form-label">
+                                <i class="bi bi-person-badge"></i> Rol <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="rol" th:field="*{rol}" required>
+                                <option value="">-- Seleccione un rol --</option>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r}"
+                                        th:text="${r.name()}">
+                                    ROL
+                                </option>
+                            </select>
+                            <div class="form-text">
+                                <strong>ADMIN:</strong> Acceso total |
+                                <strong>MEDICO:</strong> Gestiona sus pacientes |
+                                <strong>RECEPCION:</strong> Solo lectura
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label d-block">
+                                <i class="bi bi-toggle-on"></i> Estado
+                            </label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="activo"
+                                       th:field="*{activo}"
+                                       style="width: 3em; height: 1.5em;">
+                                <label class="form-check-label ms-2" for="activo">
+                                    <strong>Usuario activo</strong>
+                                    <div class="form-text">Los usuarios inactivos no pueden iniciar sesión</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Información adicional para edición -->
+                    <div th:if="${usuarioForm.id != null}" class="alert alert-info">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <strong>Información:</strong>
+                        <ul class="mb-0">
+                            <li>ID del usuario: <strong th:text="${usuarioForm.id}">ID</strong></li>
+                            <li>Fecha de creación: <strong th:text="${#temporals.format(usuarioForm.fechaCreacion, 'dd/MM/yyyy HH:mm')}">Fecha</strong></li>
+                            <li th:if="${usuarioForm.rol.name() == 'MEDICO'}">
+                                Pacientes asignados: <strong th:text="${#lists.size(usuarioForm.pacientes)}">0</strong>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row">
+                        <div class="col-md-12 text-end">
+                            <a href="/usuarios" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${usuarioForm.id == null ? 'Crear Usuario' : 'Guardar Cambios'}">
+                                        Guardar
+                                    </span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nota informativa -->
+        <div class="alert alert-warning mt-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>Importante:</strong> Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+            Las contraseñas se almacenan encriptadas con BCrypt.
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>

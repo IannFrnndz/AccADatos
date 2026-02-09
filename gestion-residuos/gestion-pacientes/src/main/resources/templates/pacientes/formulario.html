@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/header :: header(${paciente.id == null ? 'Nuevo Paciente' : 'Editar Paciente'})}"></th:block>
+</head>
+<body>
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="display-5">
+                    <i th:class="${paciente.id == null ? 'bi bi-person-plus-fill' : 'bi bi-pencil-square'}"></i>
+                    <span th:text="${paciente.id == null ? 'Nuevo Paciente' : 'Editar Paciente'}">Formulario</span>
+                </h1>
+                <p class="lead text-muted" th:text="${paciente.id == null ? 'Complete los datos del nuevo paciente' : 'Modifique los datos del paciente'}">
+                    Descripción
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a th:href="@{${usuario.rol.name() == 'MEDICO' ? '/pacientes/mis-pacientes' : '/pacientes'}}"
+                   class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-card-text"></i> Datos del Paciente
+            </div>
+            <div class="card-body">
+                <form th:action="@{${paciente.id == null ? '/pacientes/crear' : '/pacientes/actualizar/' + paciente.id}}"
+                      th:object="${paciente}"
+                      method="post">
+
+                    <!-- ID oculto (solo si es edición) -->
+                    <input type="hidden" th:field="*{id}" th:if="${paciente.id != null}">
+
+                    <!-- Sección: Datos Personales -->
+                    <h5 class="mb-3 text-primary">
+                        <i class="bi bi-person-lines-fill"></i> Datos Personales
+                    </h5>
+
+                    <div class="row">
+                        <!-- Nombre -->
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">
+                                <i class="bi bi-person"></i> Nombre <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Ingrese el nombre"
+                                   required
+                                   maxlength="100">
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="col-md-6 mb-3">
+                            <label for="apellidos" class="form-label">
+                                <i class="bi bi-people"></i> Apellidos <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="apellidos"
+                                   th:field="*{apellidos}"
+                                   placeholder="Ingrese los apellidos"
+                                   required
+                                   maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- DNI -->
+                        <div class="col-md-4 mb-3">
+                            <label for="dni" class="form-label">
+                                <i class="bi bi-card-text"></i> DNI <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="dni"
+                                   th:field="*{dni}"
+                                   placeholder="12345678A"
+                                   required
+                                   maxlength="15"
+                                   pattern="[0-9]{8}[A-Za-z]"
+                                   title="Formato: 8 números seguidos de una letra">
+                            <div class="form-text">Formato: 8 números + 1 letra (ej: 12345678A)</div>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="col-md-4 mb-3">
+                            <label for="telefono" class="form-label">
+                                <i class="bi bi-telephone"></i> Teléfono
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="telefono"
+                                   th:field="*{telefono}"
+                                   placeholder="600123456"
+                                   maxlength="20"
+                                   pattern="[0-9]{9}"
+                                   title="9 dígitos">
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="col-md-4 mb-3">
+                            <label for="fechaNacimiento" class="form-label">
+                                <i class="bi bi-calendar"></i> Fecha de Nacimiento
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="fechaNacimiento"
+                                   th:field="*{fechaNacimiento}"
+                                   max="2026-12-31">
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="activo"
+                                       th:field="*{activo}"
+                                       checked>
+                                <label class="form-check-label" for="activo">
+                                    <i class="bi bi-check-circle"></i> Paciente activo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Sección: Información Médica -->
+                    <h5 class="mb-3 text-info">
+                        <i class="bi bi-hospital"></i> Información Médica
+                    </h5>
+
+                    <div class="row">
+                        <!-- Médico Asignado -->
+                        <div class="col-md-6 mb-3">
+                            <label for="medico" class="form-label">
+                                <i class="bi bi-person-badge"></i> Médico Asignado
+                            </label>
+
+                            <!-- Si es MEDICO, mostrar campo deshabilitado -->
+                            <div th:if="${medicoFijo}">
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${paciente.medico != null ? paciente.medico.nombre : usuario.nombre}"
+                                       disabled
+                                       readonly>
+                                <input type="hidden" th:field="*{medico.id}" th:value="${usuario.id}">
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> Como médico, los pacientes se asignan automáticamente a usted
+                                </div>
+                            </div>
+
+                            <!-- Si es ADMIN, mostrar select con médicos -->
+                            <div th:if="${!medicoFijo}">
+                                <select class="form-select" id="medico" th:field="*{medico.id}">
+                                    <option value="">-- Seleccione un médico --</option>
+                                    <option th:each="medico : ${medicos}"
+                                            th:value="${medico.id}"
+                                            th:text="${medico.nombre}">
+                                        Médico
+                                    </option>
+                                </select>
+                                <div class="form-text">Seleccione el médico responsable del paciente</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial Médico -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="historial" class="form-label">
+                                <i class="bi bi-file-medical"></i> Historial Médico
+                            </label>
+                            <textarea class="form-control"
+                                      id="historial"
+                                      th:field="*{historial}"
+                                      rows="6"
+                                      placeholder="Ingrese el historial médico del paciente (antecedentes, alergias, tratamientos, etc.)"></textarea>
+                            <div class="form-text">
+                                Detalle información relevante sobre el historial médico del paciente
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Botones -->
+                    <div class="row">
+                        <div class="col-md-12 text-end">
+                            <a th:href="@{${usuario.rol.name() == 'MEDICO' ? '/pacientes/mis-pacientes' : '/pacientes'}}"
+                               class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${paciente.id == null ? 'Crear Paciente' : 'Guardar Cambios'}">
+                                        Guardar
+                                    </span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nota informativa -->
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle-fill"></i>
+            <strong>Nota:</strong> Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>
