@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Asignacion - Sistema de Residuos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-recycle"></i> Sistema de Residuos
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/camiones">
+                        <i class="bi bi-truck"></i> Camiones
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/rutas">
+                        <i class="bi bi-map"></i> Rutas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/asignaciones">
+                        <i class="bi bi-link-45deg"></i> Asignaciones
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${usuario.rol.name() == 'ADMIN'}">
+                    <a class="nav-link" href="/usuarios">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${usuario.nombre}">Usuario</span>
+                (<span th:text="${usuario.rol}">ROL</span>)
+            </span>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Mensajes de error -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${error}">Mensaje de error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Encabezado -->
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-plus-circle"></i> Nueva Asignacion
+        </h2>
+        <p class="text-muted">Asigna un camion a una ruta de recoleccion</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{/asignaciones/crear}" method="post">
+
+                        <!-- Seleccionar Camion -->
+                        <div class="mb-4">
+                            <label for="camionId" class="form-label">
+                                <i class="bi bi-truck"></i> Seleccionar Camion *
+                            </label>
+                            <select class="form-select form-select-lg" id="camionId" name="camionId" required>
+                                <option value="">-- Seleccione un camion --</option>
+                                <option th:each="camion : ${camiones}"
+                                        th:value="${camion.id}"
+                                        th:text="${camion.matricula + ' - ' + camion.modelo + ' (' + camion.capacidadKG + ' KG) - ' + camion.estado}">
+                                    ABC-1234 - Mercedes Actros (5000 KG) - DISPONIBLE
+                                </option>
+                            </select>
+                            <div class="form-text">
+                                Selecciona el camion que sera asignado a la ruta
+                            </div>
+                        </div>
+
+                        <!-- Seleccionar Ruta -->
+                        <div class="mb-4">
+                            <label for="rutaId" class="form-label">
+                                <i class="bi bi-map"></i> Seleccionar Ruta *
+                            </label>
+                            <select class="form-select form-select-lg" id="rutaId" name="rutaId" required>
+                                <option value="">-- Seleccione una ruta --</option>
+                                <option th:each="ruta : ${rutas}"
+                                        th:value="${ruta.id}"
+                                        th:text="${ruta.nombre + ' - ' + ruta.zona + ' (' + ruta.diaSemana + ')'}">
+                                    Ruta Centro - Centro (LUNES)
+                                </option>
+                            </select>
+                            <div class="form-text">
+                                Selecciona la ruta a la que se asignara el camion
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Nota:</strong> La asignacion se registrara con la fecha y hora actual.
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a href="/asignaciones" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Crear Asignacion
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de información lateral -->
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-info-circle"></i> Informacion
+                    </h5>
+                    <hr>
+                    <p><strong>Camiones disponibles:</strong> <span th:text="${#lists.size(camiones)}">0</span></p>
+                    <p><strong>Rutas activas:</strong> <span th:text="${#lists.size(rutas)}">0</span></p>
+                    <hr>
+                    <h6>Pasos:</h6>
+                    <ol class="small">
+                        <li>Selecciona un camion de la lista</li>
+                        <li>Selecciona una ruta de recoleccion</li>
+                        <li>Haz clic en "Crear Asignacion"</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mt-3 border-warning">
+                <div class="card-body">
+                    <h6 class="card-title text-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Importante
+                    </h6>
+                    <p class="small mb-0">
+                        Asegurate de que el camion este en estado DISPONIBLE antes de asignarlo a una ruta.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

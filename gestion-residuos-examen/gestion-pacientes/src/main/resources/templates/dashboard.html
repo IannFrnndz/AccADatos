@@ -1,126 +1,123 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <th:block th:replace="~{fragments/header :: header('Dashboard - Centro Médico')}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Residuos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
 <body>
-<!-- Navbar -->
-<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-recycle"></i> Sistema de Residuos
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/camiones">
+                        <i class="bi bi-truck"></i> Camiones
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/rutas">
+                        <i class="bi bi-map"></i> Rutas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/asignaciones">
+                        <i class="bi bi-link-45deg"></i> Asignaciones
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${usuario.rol.name() == 'ADMIN'}">
+                    <a class="nav-link" href="/usuarios">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${usuario.nombre}">Usuario</span>
+                (<span th:text="${usuario.rol}">ROL</span>)
+            </span>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
 
-<!-- Contenido Principal -->
-<div class="main-content">
-    <div class="container">
-        <!-- Título de bienvenida -->
-        <div class="row mb-4">
-            <div class="col">
-                <h1 class="display-5">
-                    <i class="bi bi-speedometer2"></i> Dashboard
-                </h1>
-                <p class="lead">
-                    Bienvenido, <strong th:text="${usuario.nombre}">Usuario</strong>
-                    <span class="badge bg-primary badge-role" th:text="${usuario.rol}">ROL</span>
-                </p>
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+        <p class="lead">Bienvenido al Sistema de Gestion de Residuos</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Card Camiones -->
+        <div class="col-md-4">
+            <div class="card text-center border-primary shadow">
+                <div class="card-body">
+                    <i class="bi bi-truck text-primary" style="font-size: 3rem;"></i>
+                    <h3 class="card-title mt-3">Camiones</h3>
+                    <p class="card-text">Gestiona la flota de camiones</p>
+                    <a href="/camiones" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-circle"></i> Ver Camiones
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Estadísticas para ADMIN -->
-        <div sec:authorize="hasRole('ADMIN')" class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card text-white bg-primary">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">Total Pacientes</h5>
-                                <h2 class="mb-0" th:text="${totalPacientes}">0</h2>
-                            </div>
-                            <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <div class="card text-white bg-success">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">Total Médicos</h5>
-                                <h2 class="mb-0" th:text="${totalMedicos}">0</h2>
-                            </div>
-                            <i class="bi bi-person-badge" style="font-size: 3rem; opacity: 0.5;"></i>
-                        </div>
-                    </div>
+        <!-- Card Rutas -->
+        <div class="col-md-4">
+            <div class="card text-center border-success shadow">
+                <div class="card-body">
+                    <i class="bi bi-map text-success" style="font-size: 3rem;"></i>
+                    <h3 class="card-title mt-3">Rutas</h3>
+                    <p class="card-text">Administra las rutas de recoleccion</p>
+                    <a href="/rutas" class="btn btn-success">
+                        <i class="bi bi-arrow-right-circle"></i> Ver Rutas
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Estadísticas para MEDICO -->
-        <div sec:authorize="hasRole('MEDICO')" class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card text-white bg-info">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">Mis Pacientes</h5>
-                                <h2 class="mb-0" th:text="${misPacientes}">0</h2>
-                            </div>
-                            <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
-                        </div>
-                    </div>
+        <!-- Card Asignaciones -->
+        <div class="col-md-4">
+            <div class="card text-center border-warning shadow">
+                <div class="card-body">
+                    <i class="bi bi-link-45deg text-warning" style="font-size: 3rem;"></i>
+                    <h3 class="card-title mt-3">Asignaciones</h3>
+                    <p class="card-text">Asigna camiones a rutas</p>
+                    <a href="/asignaciones" class="btn btn-warning">
+                        <i class="bi bi-arrow-right-circle"></i> Ver Asignaciones
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Accesos rápidos -->
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-lightning"></i> Accesos Rápidos
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Para ADMIN y RECEPCION -->
-                            <div sec:authorize="hasAnyRole('ADMIN', 'RECEPCION')" class="col-md-4 mb-3">
-                                <a href="/pacientes" class="btn btn-outline-primary w-100 p-3">
-                                    <i class="bi bi-list-ul" style="font-size: 2rem;"></i>
-                                    <p class="mb-0 mt-2">Ver Todos los Pacientes</p>
-                                </a>
-                            </div>
-
-                            <!-- Para MEDICO -->
-                            <div sec:authorize="hasRole('MEDICO')" class="col-md-4 mb-3">
-                                <a href="/pacientes/mis-pacientes" class="btn btn-outline-primary w-100 p-3">
-                                    <i class="bi bi-list-ul" style="font-size: 2rem;"></i>
-                                    <p class="mb-0 mt-2">Ver Mis Pacientes</p>
-                                </a>
-                            </div>
-
-                            <!-- Crear paciente (ADMIN y MEDICO) -->
-                            <div sec:authorize="hasAnyRole('ADMIN', 'MEDICO')" class="col-md-4 mb-3">
-                                <a href="/pacientes/nuevo" class="btn btn-outline-success w-100 p-3">
-                                    <i class="bi bi-person-plus" style="font-size: 2rem;"></i>
-                                    <p class="mb-0 mt-2">Nuevo Paciente</p>
-                                </a>
-                            </div>
-
-                            <!-- Gestionar usuarios (solo ADMIN) -->
-                            <div sec:authorize="hasRole('ADMIN')" class="col-md-4 mb-3">
-                                <a href="/usuarios" class="btn btn-outline-warning w-100 p-3">
-                                    <i class="bi bi-person-gear" style="font-size: 2rem;"></i>
-                                    <p class="mb-0 mt-2">Gestionar Usuarios</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Card Usuarios (solo ADMIN) -->
+        <div class="col-md-4" th:if="${usuario.rol.name() == 'ADMIN'}">
+            <div class="card text-center border-info shadow">
+                <div class="card-body">
+                    <i class="bi bi-people text-info" style="font-size: 3rem;"></i>
+                    <h3 class="card-title mt-3">Usuarios</h3>
+                    <p class="card-text">Administra usuarios del sistema</p>
+                    <a href="/usuarios" class="btn btn-info">
+                        <i class="bi bi-arrow-right-circle"></i> Ver Usuarios
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Footer -->
-<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

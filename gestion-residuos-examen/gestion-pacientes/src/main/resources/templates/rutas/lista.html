@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios - Sistema de Residuos</title>
+    <title>Rutas - Sistema de Residuos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
@@ -24,7 +24,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/rutas">
+                    <a class="nav-link active" href="/rutas">
                         <i class="bi bi-map"></i> Rutas
                     </a>
                 </li>
@@ -33,8 +33,8 @@
                         <i class="bi bi-link-45deg"></i> Asignaciones
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/usuarios">
+                <li class="nav-item" th:if="${usuario.rol.name() == 'ADMIN'}">
+                    <a class="nav-link" href="/usuarios">
                         <i class="bi bi-people"></i> Usuarios
                     </a>
                 </li>
@@ -70,64 +70,55 @@
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>
-            <i class="bi bi-people"></i> Gestion de Usuarios
+            <i class="bi bi-map"></i> Listado de Rutas
         </h2>
-        <a href="/usuarios/nuevo" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nuevo Usuario
-        </a>
     </div>
 
-    <!-- Tabla de usuarios -->
+    <!-- Tabla de rutas -->
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive">
+            <div th:if="${rutas.isEmpty()}" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-3">No hay rutas registradas</p>
+            </div>
+
+            <div th:if="${!rutas.isEmpty()}" class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>Username</th>
                         <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
+                        <th>Zona</th>
+                        <th>Dia de la Semana</th>
+                        <th>Horario</th>
+                        <th>Camiones Asignados</th>
                         <th>Activo</th>
-                        <th>Fecha Creacion</th>
-                        <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="u : ${usuarios}">
-                        <td th:text="${u.id}">#1</td>
-                        <td><strong th:text="${u.username}">admin</strong></td>
-                        <td th:text="${u.nombre}">Administrador</td>
-                        <td th:text="${u.email}">admin@email.com</td>
+                    <tr th:each="ruta : ${rutas}">
+                        <td th:text="${ruta.id}">#1</td>
+                        <td><strong th:text="${ruta.nombre}">Ruta Centro</strong></td>
+                        <td th:text="${ruta.zona}">Centro</td>
                         <td>
-                            <span class="badge"
-                                  th:classappend="${u.rol.name() == 'ADMIN'} ? 'bg-danger' : 'bg-primary'"
-                                  th:text="${u.rol}">
-                                ADMIN
-                            </span>
+                            <span class="badge bg-primary" th:text="${ruta.diaSemana}">LUNES</span>
                         </td>
                         <td>
-                            <span class="badge"
-                                  th:classappend="${u.activo} ? 'bg-success' : 'bg-danger'"
-                                  th:text="${u.activo} ? 'Si' : 'No'">
+                            <span th:if="${ruta.horaInicio != null and ruta.horaFin != null}">
+                                <span th:text="${ruta.horaInicio}">08:00</span> -
+                                <span th:text="${ruta.horaFin}">12:00</span>
+                            </span>
+                            <span th:if="${ruta.horaInicio == null or ruta.horaFin == null}">-</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" th:text="${camionesPorRuta.get(ruta.id)}">0</span>
+                            camiones
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${ruta.activo} ? 'bg-success' : 'bg-danger'"
+                                  th:text="${ruta.activo} ? 'Si' : 'No'">
                                 Si
                             </span>
-                        </td>
-                        <td th:text="${#temporals.format(u.fechaCreacion, 'dd/MM/yyyy')}">01/01/2026</td>
-                        <td>
-                            <a th:href="@{/usuarios/editar/{id}(id=${u.id})}"
-                               class="btn btn-sm btn-warning">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <form th:action="@{/usuarios/eliminar/{id}(id=${u.id})}"
-                                  method="post" class="d-inline"
-                                  th:if="${u.id != usuario.id}">
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('¿Estas seguro de eliminar este usuario?')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     </tbody>
