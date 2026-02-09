@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/dashboard}">
+            <i class="bi bi-hospital"></i>
+            Centro Médico
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+
+                <!-- Usuarios (solo ADMIN) -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/usuarios}">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+
+                <!-- Pacientes -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" id="pacientesDropdown"
+                       role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-fill"></i> Pacientes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- ADMIN y RECEPCION ven todos los pacientes -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'RECEPCION')">
+                            <a class="dropdown-item" th:href="@{/pacientes}">
+                                <i class="bi bi-list-ul"></i> Todos los Pacientes
+                            </a>
+                        </li>
+
+                        <!-- MEDICO ve sus pacientes -->
+                        <li sec:authorize="hasRole('MEDICO')">
+                            <a class="dropdown-item" th:href="@{/pacientes/mis-pacientes}">
+                                <i class="bi bi-person-badge"></i> Mis Pacientes
+                            </a>
+                        </li>
+
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"><hr class="dropdown-divider"></li>
+
+                        <!-- Crear paciente -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')">
+                            <a class="dropdown-item" th:href="@{/pacientes/nuevo}">
+                                <i class="bi bi-plus-circle"></i> Nuevo Paciente
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Citas -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" id="citasDropdown"
+                       role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-calendar-check"></i> Citas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- ADMIN, RECEPCION, ENFERMERO ven todas las citas -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'RECEPCION', 'ENFERMERO')">
+                            <a class="dropdown-item" th:href="@{/citas}">
+                                <i class="bi bi-list-ul"></i> Todas las Citas
+                            </a>
+                        </li>
+
+                        <!-- MEDICO ve sus citas -->
+                        <li sec:authorize="hasRole('MEDICO')">
+                            <a class="dropdown-item" th:href="@{/citas/mis-citas}">
+                                <i class="bi bi-person-badge"></i> Mis Citas
+                            </a>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <!-- Agenda (todos) -->
+                        <li>
+                            <a class="dropdown-item" th:href="@{/citas/agenda}">
+                                <i class="bi bi-calendar3"></i> Agenda
+                            </a>
+                        </li>
+
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"><hr class="dropdown-divider"></li>
+
+                        <!-- Crear cita -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')">
+                            <a class="dropdown-item" th:href="@{/citas/nueva}">
+                                <i class="bi bi-plus-circle"></i> Nueva Cita
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Consultas -->
+                <li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN', 'MEDICO', 'ENFERMERO')">
+                    <a class="nav-link dropdown-toggle" href="#" id="consultasDropdown"
+                       role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-file-medical"></i> Consultas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- ADMIN y ENFERMERO ven todas -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'ENFERMERO')">
+                            <a class="dropdown-item" th:href="@{/consultas}">
+                                <i class="bi bi-list-ul"></i> Todas las Consultas
+                            </a>
+                        </li>
+
+                        <!-- MEDICO ve sus consultas -->
+                        <li sec:authorize="hasRole('MEDICO')">
+                            <a class="dropdown-item" th:href="@{/consultas}">
+                                <i class="bi bi-person-badge"></i> Mis Consultas
+                            </a>
+                        </li>
+
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"><hr class="dropdown-divider"></li>
+
+                        <!-- Crear consulta -->
+                        <li sec:authorize="hasAnyRole('ADMIN', 'MEDICO')">
+                            <a class="dropdown-item" th:href="@{/consultas/nueva}">
+                                <i class="bi bi-plus-circle"></i> Nueva Consulta
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Usuario logueado -->
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown"
+                       role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="principal.usuario.nombre">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                                <span class="dropdown-item-text">
+                                    <strong>Rol:</strong>
+                                    <span class="badge bg-primary" sec:authentication="principal.usuario.rol"></span>
+                                </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

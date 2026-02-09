@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Lista de Consultas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <!-- Título y botones -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-file-medical"></i>
+            <span th:text="${titulo}">Lista de Consultas</span>
+        </h2>
+
+        <a sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"
+           th:href="@{/consultas/nueva}"
+           class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Consulta
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary" th:text="${#lists.size(consultas)}">0</h3>
+                    <p class="text-muted mb-0">Total de consultas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success bg-opacity-10">
+                <div class="card-body">
+                    <h3 class="text-success" th:text="${#lists.size(consultas.?[cita != null])}">0</h3>
+                    <p class="text-muted mb-0">Con cita asociada</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning bg-opacity-10">
+                <div class="card-body">
+                    <h3 class="text-warning" th:text="${#lists.size(consultas.?[cita == null])}">0</h3>
+                    <p class="text-muted mb-0">Sin cita (directas)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info bg-opacity-10">
+                <div class="card-body">
+                    <h3 class="text-info" th:text="${#lists.size(consultas.?[proximaRevision != null])}">0</h3>
+                    <p class="text-muted mb-0">Con seguimiento</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de consultas -->
+    <div class="card">
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(consultas)}" class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                No hay consultas registradas.
+            </div>
+
+            <div th:if="${!#lists.isEmpty(consultas)}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Motivo</th>
+                        <th>Diagnóstico</th>
+                        <th>Tipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="consulta : ${consultas}">
+                        <td>
+                            <i class="bi bi-calendar-event"></i>
+                            <span th:text="${#temporals.format(consulta.fechaConsulta, 'dd/MM/yyyy HH:mm')}"></span>
+                        </td>
+                        <td>
+                            <i class="bi bi-person"></i>
+                            <span th:text="${consulta.paciente.nombreCompleto}"></span>
+                        </td>
+                        <td>
+                            <i class="bi bi-person-badge"></i>
+                            <span th:text="${consulta.medico.nombre}"></span>
+                        </td>
+                        <td>
+                                    <span th:text="${consulta.motivoConsulta}"
+                                          class="text-truncate"
+                                          style="max-width: 200px; display: inline-block;"
+                                          th:title="${consulta.motivoConsulta}">
+                                    </span>
+                        </td>
+                        <td sec:authorize="hasAnyRole('ADMIN', 'MEDICO')">
+                                    <span th:text="${consulta.diagnostico}"
+                                          class="text-truncate"
+                                          style="max-width: 200px; display: inline-block;"
+                                          th:title="${consulta.diagnostico}">
+                                    </span>
+                        </td>
+                        <td sec:authorize="hasRole('ENFERMERO')">
+                            <em class="text-muted">(Restringido)</em>
+                        </td>
+                        <td>
+                                    <span th:if="${consulta.cita != null}"
+                                          class="badge bg-success"
+                                          title="Consulta vinculada a cita">
+                                        <i class="bi bi-link"></i> Con cita
+                                    </span>
+                            <span th:if="${consulta.cita == null}"
+                                  class="badge bg-warning text-dark"
+                                  title="Consulta directa sin cita">
+                                        <i class="bi bi-clipboard-pulse"></i> Directa
+                                    </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/consultas/ver/{id}(id=${consulta.id})}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Ver detalle">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <a th:href="@{/consultas/historial/{id}(id=${consulta.paciente.id})}"
+                               class="btn btn-sm btn-outline-info"
+                               title="Ver historial del paciente">
+                                <i class="bi bi-journal-medical"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

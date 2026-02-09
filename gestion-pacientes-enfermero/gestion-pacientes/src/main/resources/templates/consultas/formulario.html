@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${consulta.id != null ? 'Editar Consulta' : 'Nueva Consulta'}">Formulario Consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <!-- Título -->
+    <div class="mb-4">
+        <h2>
+            <i th:class="${consulta.id != null ? 'bi bi-pencil-square' : 'bi bi-plus-circle'}"></i>
+            <span th:text="${consulta.id != null ? 'Editar Consulta' : 'Nueva Consulta'}"></span>
+        </h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/consultas}">Consultas</a></li>
+                <li class="breadcrumb-item active"
+                    th:text="${consulta.id != null ? 'Editar' : 'Nueva'}">
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Mensajes de error -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Alerta si viene de una cita -->
+    <div th:if="${desdeCita}" class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle"></i>
+        Esta consulta está vinculada a una cita. Los datos del paciente, médico y fecha se han pre-cargado automáticamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="${consulta.id != null ? '/consultas/actualizar/' + consulta.id : '/consultas/crear'}"
+                          method="post">
+
+                        <!-- Cita asociada (hidden si existe) -->
+                        <input type="hidden"
+                               th:if="${consulta.cita != null}"
+                               name="citaId"
+                               th:value="${consulta.cita.id}">
+
+                        <!-- Información de cita vinculada -->
+                        <div th:if="${consulta.cita != null}" class="alert alert-success mb-3">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-link"></i> Consulta vinculada a cita
+                            </h6>
+                            <p class="mb-0">
+                                <strong>Fecha de la cita:</strong>
+                                <span th:text="${#temporals.format(consulta.cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Motivo original:</strong>
+                                <span th:text="${consulta.cita.motivo}"></span>
+                            </p>
+                        </div>
+
+                        <div class="row">
+                            <!-- Paciente -->
+                            <div class="col-md-6 mb-3">
+                                <label for="pacienteId" class="form-label">
+                                    <i class="bi bi-person"></i> Paciente *
+                                </label>
+                                <select id="pacienteId"
+                                        name="pacienteId"
+                                        class="form-select"
+                                        required
+                                        th:disabled="${edicion}">
+                                    <option value="">Seleccione un paciente</option>
+                                    <option th:each="p : ${pacientes}"
+                                            th:value="${p.id}"
+                                            th:text="${p.nombreCompleto + ' - ' + p.dni}"
+                                            th:selected="${consulta.paciente != null && consulta.paciente.id == p.id}">
+                                    </option>
+                                </select>
+                                <div th:if="${edicion}" class="form-text text-danger">
+                                    <i class="bi bi-lock"></i> No se puede cambiar el paciente al editar
+                                </div>
+                            </div>
+
+                            <!-- Médico -->
+                            <div class="col-md-6 mb-3">
+                                <label for="medicoId" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Médico *
+                                </label>
+                                <select id="medicoId"
+                                        name="medicoId"
+                                        class="form-select"
+                                        required
+                                        th:disabled="${usuario.rol.name() == 'MEDICO' || edicion}">
+                                    <option value="">Seleccione un médico</option>
+                                    <option th:each="m : ${medicos}"
+                                            th:value="${m.id}"
+                                            th:text="${m.nombre}"
+                                            th:selected="${consulta.medico != null && consulta.medico.id == m.id}">
+                                    </option>
+                                </select>
+                                <div th:if="${usuario.rol.name() == 'MEDICO'}" class="form-text">
+                                    Como médico, solo puedes crear consultas para ti mismo.
+                                </div>
+                                <div th:if="${edicion}" class="form-text text-danger">
+                                    <i class="bi bi-lock"></i> No se puede cambiar el médico al editar
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fecha de consulta -->
+                        <div class="mb-3">
+                            <label for="fechaConsulta" class="form-label">
+                                <i class="bi bi-calendar-event"></i> Fecha y Hora de la Consulta *
+                            </label>
+                            <input type="datetime-local"
+                                   id="fechaConsulta"
+                                   name="fechaConsulta"
+                                   class="form-control"
+                                   th:value="${consulta.fechaConsulta != null ? #temporals.format(consulta.fechaConsulta, 'yyyy-MM-dd\'T\'HH:mm') : ''}"
+                                   required>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3"><i class="bi bi-clipboard-pulse"></i> Información Clínica</h5>
+
+                        <!-- Motivo de consulta -->
+                        <div class="mb-3">
+                            <label for="motivoConsulta" class="form-label">
+                                <i class="bi bi-chat-left-text"></i> Motivo de la Consulta *
+                            </label>
+                            <textarea id="motivoConsulta"
+                                      name="motivoConsulta"
+                                      class="form-control"
+                                      rows="2"
+                                      placeholder="Ej: Control rutinario de hipertensión arterial"
+                                      required
+                                      th:text="${consulta.motivoConsulta}">
+                                </textarea>
+                        </div>
+
+                        <!-- Síntomas -->
+                        <div class="mb-3">
+                            <label for="sintomas" class="form-label">
+                                <i class="bi bi-thermometer"></i> Síntomas
+                            </label>
+                            <textarea id="sintomas"
+                                      name="sintomas"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Describa los síntomas presentados por el paciente..."
+                                      th:text="${consulta.sintomas}">
+                                </textarea>
+                        </div>
+
+                        <!-- Diagnóstico -->
+                        <div class="mb-3">
+                            <label for="diagnostico" class="form-label">
+                                <i class="bi bi-clipboard-check"></i> Diagnóstico
+                            </label>
+                            <textarea id="diagnostico"
+                                      name="diagnostico"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Diagnóstico médico..."
+                                      th:text="${consulta.diagnostico}">
+                                </textarea>
+                        </div>
+
+                        <!-- Tratamiento -->
+                        <div class="mb-3">
+                            <label for="tratamiento" class="form-label">
+                                <i class="bi bi-capsule"></i> Tratamiento
+                            </label>
+                            <textarea id="tratamiento"
+                                      name="tratamiento"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Tratamiento prescrito, medicamentos, dosis, indicaciones..."
+                                      th:text="${consulta.tratamiento}">
+                                </textarea>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">
+                                <i class="bi bi-sticky"></i> Observaciones (opcional)
+                            </label>
+                            <textarea id="observaciones"
+                                      name="observaciones"
+                                      class="form-control"
+                                      rows="2"
+                                      placeholder="Cualquier información adicional relevante..."
+                                      th:text="${consulta.observaciones}">
+                                </textarea>
+                        </div>
+
+                        <!-- Próxima revisión -->
+                        <div class="mb-3">
+                            <label for="proximaRevision" class="form-label">
+                                <i class="bi bi-calendar-check"></i> Próxima Revisión (opcional)
+                            </label>
+                            <input type="date"
+                                   id="proximaRevision"
+                                   name="proximaRevision"
+                                   class="form-control"
+                                   th:value="${consulta.proximaRevision != null ? #temporals.format(consulta.proximaRevision, 'yyyy-MM-dd') : ''}">
+                            <div class="form-text">
+                                Deje en blanco si no requiere seguimiento.
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a th:href="@{/consultas}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${consulta.id != null ? 'Actualizar Consulta' : 'Guardar Consulta'}"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de ayuda -->
+        <div class="col-lg-3">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Información
+                </div>
+                <div class="card-body">
+                    <h6>Campos obligatorios:</h6>
+                    <ul class="small">
+                        <li>Paciente</li>
+                        <li>Médico</li>
+                        <li>Fecha de consulta</li>
+                        <li>Motivo de consulta</li>
+                    </ul>
+
+                    <hr>
+
+                    <h6>Campos opcionales:</h6>
+                    <ul class="small">
+                        <li>Síntomas</li>
+                        <li>Diagnóstico</li>
+                        <li>Tratamiento</li>
+                        <li>Observaciones</li>
+                        <li>Próxima revisión</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-info" th:if="${consulta.cita != null}">
+                <div class="card-body">
+                    <h6 class="text-info">
+                        <i class="bi bi-lightbulb"></i> Consejo
+                    </h6>
+                    <p class="small mb-0">
+                        Esta consulta está vinculada a una cita. Al guardarla, quedará registrada en el historial del paciente.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card border-warning mt-3" th:if="${edicion}">
+                <div class="card-body">
+                    <h6 class="text-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Advertencia
+                    </h6>
+                    <p class="small mb-0">
+                        Al editar una consulta, no se puede cambiar el paciente, médico o cita asociada. Solo se pueden modificar los datos clínicos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para fecha mínima -->
+<script>
+    // Establecer fecha máxima para la consulta (no puede ser futura)
+    document.getElementById('fechaConsulta').max = new Date().toISOString().slice(0, 16);
+
+    // Establecer fecha mínima para próxima revisión (debe ser futura)
+    document.getElementById('proximaRevision').min = new Date().toISOString().slice(0, 10);
+</script>
+</body>
+</html>

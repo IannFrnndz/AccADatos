@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo}">Lista de Citas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+  <!-- Título y botones -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="bi bi-calendar-check"></i>
+      <span th:text="${titulo}">Lista de Citas</span>
+    </h2>
+
+    <!-- Botón para crear cita (solo ADMIN y MEDICO) -->
+    <div>
+      <a th:href="@{/citas/agenda}" class="btn btn-info me-2">
+        <i class="bi bi-calendar3"></i> Ver Agenda
+      </a>
+      <a sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"
+         th:href="@{/citas/nueva}"
+         class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nueva Cita
+      </a>
+    </div>
+  </div>
+
+  <!-- Mensajes de éxito/error -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle"></i>
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Estado</label>
+          <select name="estado" class="form-select">
+            <option value="">Todos los estados</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="CONFIRMADA">Confirmada</option>
+            <option value="REALIZADA">Realizada</option>
+            <option value="CANCELADA">Cancelada</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-secondary">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+          <a th:href="@{/citas}" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-x-circle"></i> Limpiar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de citas -->
+  <div class="card">
+    <div class="card-body">
+      <div th:if="${#lists.isEmpty(citas)}" class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        No hay citas registradas.
+      </div>
+
+      <div th:if="${!#lists.isEmpty(citas)}" class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="cita : ${citas}">
+            <td>
+              <i class="bi bi-calendar-event"></i>
+              <span th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+            </td>
+            <td>
+              <i class="bi bi-person"></i>
+              <span th:text="${cita.paciente.nombreCompleto}"></span>
+            </td>
+            <td>
+              <i class="bi bi-person-badge"></i>
+              <span th:text="${cita.medico.nombre}"></span>
+            </td>
+            <td>
+              <span th:text="${cita.motivo}" class="text-truncate" style="max-width: 200px; display: inline-block;"></span>
+            </td>
+            <td>
+                                    <span th:class="'badge ' +
+                                        ${cita.estado.name() == 'PENDIENTE' ? 'bg-warning text-dark' :
+                                        (cita.estado.name() == 'CONFIRMADA' ? 'bg-info' :
+                                        (cita.estado.name() == 'REALIZADA' ? 'bg-success' : 'bg-secondary'))}"
+                                          th:text="${cita.estado}">
+                                    </span>
+            </td>
+            <td>
+              <a th:href="@{/citas/ver/{id}(id=${cita.id})}"
+                 class="btn btn-sm btn-outline-primary"
+                 title="Ver detalle">
+                <i class="bi bi-eye"></i>
+              </a>
+
+              <!-- Confirmar cita -->
+              <form th:if="${cita.estado.name() == 'PENDIENTE'}"
+                    th:action="@{/citas/confirmar/{id}(id=${cita.id})}"
+                    method="post"
+                    style="display: inline;">
+                <button type="submit"
+                        class="btn btn-sm btn-success"
+                        title="Confirmar cita">
+                  <i class="bi bi-check-circle"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card text-center bg-warning bg-opacity-10">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span th:text="${#lists.size(citas.?[estado.name() == 'PENDIENTE'])}">0</span>
+          </h5>
+          <p class="card-text text-muted">Pendientes</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-info bg-opacity-10">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span th:text="${#lists.size(citas.?[estado.name() == 'CONFIRMADA'])}">0</span>
+          </h5>
+          <p class="card-text text-muted">Confirmadas</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-success bg-opacity-10">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span th:text="${#lists.size(citas.?[estado.name() == 'REALIZADA'])}">0</span>
+          </h5>
+          <p class="card-text text-muted">Realizadas</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center bg-secondary bg-opacity-10">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span th:text="${#lists.size(citas.?[estado.name() == 'CANCELADA'])}">0</span>
+          </h5>
+          <p class="card-text text-muted">Canceladas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

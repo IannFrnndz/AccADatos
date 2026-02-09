@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <!-- Título -->
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-file-medical"></i>
+            Detalle de Consulta Médica
+        </h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/consultas}">Consultas</a></li>
+                <li class="breadcrumb-item active">Detalle</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row">
+        <!-- Información principal -->
+        <div class="col-lg-8">
+            <!-- Información general -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Información General
+                    </h5>
+                    <div>
+                            <span th:if="${consulta.cita != null}"
+                                  class="badge bg-success">
+                                <i class="bi bi-link"></i> Con cita
+                            </span>
+                        <span th:if="${consulta.cita == null}"
+                              class="badge bg-warning text-dark">
+                                <i class="bi bi-clipboard-pulse"></i> Consulta directa
+                            </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">
+                                <i class="bi bi-calendar-event"></i> Fecha de Consulta
+                            </h6>
+                            <p class="h5" th:text="${#temporals.format(consulta.fechaConsulta, 'dd/MM/yyyy HH:mm')}"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">
+                                <i class="bi bi-calendar-plus"></i> Fecha de Registro
+                            </h6>
+                            <p class="h5" th:text="${#temporals.format(consulta.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">
+                                <i class="bi bi-person"></i> Paciente
+                            </h6>
+                            <p class="mb-1">
+                                <strong th:text="${consulta.paciente.nombreCompleto}"></strong>
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-card-text"></i> DNI:
+                                <span th:text="${consulta.paciente.dni}"></span>
+                            </p>
+                            <a th:href="@{/pacientes/ver/{id}(id=${consulta.paciente.id})}"
+                               class="btn btn-sm btn-outline-primary mt-2">
+                                <i class="bi bi-eye"></i> Ver ficha
+                            </a>
+                            <a th:href="@{/consultas/historial/{id}(id=${consulta.paciente.id})}"
+                               class="btn btn-sm btn-outline-info mt-2">
+                                <i class="bi bi-journal-medical"></i> Ver historial
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">
+                                <i class="bi bi-person-badge"></i> Médico
+                            </h6>
+                            <p class="mb-1">
+                                <strong th:text="${consulta.medico.nombre}"></strong>
+                            </p>
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-envelope"></i>
+                                <span th:text="${consulta.medico.email}"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Cita asociada -->
+                    <div th:if="${consulta.cita != null}">
+                        <hr>
+                        <div class="alert alert-info mb-0">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-link"></i> Cita Asociada
+                            </h6>
+                            <p class="mb-1">
+                                <strong>Fecha:</strong>
+                                <span th:text="${#temporals.format(consulta.cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                            </p>
+                            <p class="mb-2">
+                                <strong>Estado:</strong>
+                                <span class="badge bg-success" th:text="${consulta.cita.estado}"></span>
+                            </p>
+                            <a th:href="@{/citas/ver/{id}(id=${consulta.cita.id})}"
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> Ver Cita
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información clínica (Solo ADMIN y MEDICO) -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'MEDICO')" class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-pulse"></i> Información Clínica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="text-muted">
+                            <i class="bi bi-chat-left-text"></i> Motivo de la Consulta
+                        </h6>
+                        <p th:text="${consulta.motivoConsulta}"></p>
+                    </div>
+
+                    <div class="mb-4" th:if="${consulta.sintomas != null && !#strings.isEmpty(consulta.sintomas)}">
+                        <h6 class="text-muted">
+                            <i class="bi bi-thermometer"></i> Síntomas
+                        </h6>
+                        <p th:text="${consulta.sintomas}"></p>
+                    </div>
+
+                    <div class="mb-4" th:if="${consulta.diagnostico != null && !#strings.isEmpty(consulta.diagnostico)}">
+                        <h6 class="text-muted">
+                            <i class="bi bi-clipboard-check"></i> Diagnóstico
+                        </h6>
+                        <div class="alert alert-primary" th:text="${consulta.diagnostico}"></div>
+                    </div>
+
+                    <div class="mb-4" th:if="${consulta.tratamiento != null && !#strings.isEmpty(consulta.tratamiento)}">
+                        <h6 class="text-muted">
+                            <i class="bi bi-capsule"></i> Tratamiento
+                        </h6>
+                        <div class="alert alert-success" th:text="${consulta.tratamiento}"></div>
+                    </div>
+
+                    <div th:if="${consulta.observaciones != null && !#strings.isEmpty(consulta.observaciones)}">
+                        <h6 class="text-muted">
+                            <i class="bi bi-sticky"></i> Observaciones
+                        </h6>
+                        <p th:text="${consulta.observaciones}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información limitada para ENFERMERO -->
+            <div sec:authorize="hasRole('ENFERMERO')" class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-pulse"></i> Información Clínica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted">
+                            <i class="bi bi-chat-left-text"></i> Motivo de la Consulta
+                        </h6>
+                        <p th:text="${consulta.motivoConsulta}"></p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-lock"></i>
+                        <strong>Información Restringida</strong>
+                        <p class="mb-0 small">
+                            Como enfermero, no tienes acceso al diagnóstico, tratamiento y detalles clínicos completos de esta consulta.
+                            Solo el médico responsable y los administradores pueden ver esta información.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seguimiento -->
+            <div th:if="${consulta.proximaRevision != null}" class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-arrow-repeat"></i> Seguimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        <strong><i class="bi bi-calendar-check"></i> Próxima Revisión:</strong>
+                        <span class="h5 ms-2" th:text="${#temporals.format(consulta.proximaRevision, 'dd/MM/yyyy')}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de acciones -->
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear"></i> Acciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <!-- Editar -->
+                        <a sec:authorize="hasAnyRole('ADMIN', 'MEDICO')"
+                           th:href="@{/consultas/editar/{id}(id=${consulta.id})}"
+                           class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> Editar Consulta
+                        </a>
+
+                        <hr>
+
+                        <!-- Volver -->
+                        <a th:href="@{/consultas}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Consultas
+                        </a>
+
+                        <!-- Ver historial del paciente -->
+                        <a th:href="@{/consultas/historial/{id}(id=${consulta.paciente.id})}"
+                           class="btn btn-outline-info">
+                            <i class="bi bi-journal-medical"></i> Historial del Paciente
+                        </a>
+
+                        <!-- Ver paciente -->
+                        <a th:href="@{/pacientes/ver/{id}(id=${consulta.paciente.id})}"
+                           class="btn btn-outline-primary">
+                            <i class="bi bi-person"></i> Ficha del Paciente
+                        </a>
+
+                        <!-- Ver cita si existe -->
+                        <a th:if="${consulta.cita != null}"
+                           th:href="@{/citas/ver/{id}(id=${consulta.cita.id})}"
+                           class="btn btn-outline-success">
+                            <i class="bi bi-calendar-event"></i> Ver Cita Asociada
+                        </a>
+
+                        <hr>
+
+                        <!-- Eliminar (solo ADMIN) -->
+                        <form sec:authorize="hasRole('ADMIN')"
+                              th:action="@{/consultas/eliminar/{id}(id=${consulta.id})}"
+                              method="post"
+                              onsubmit="return confirm('⚠️ ¿ELIMINAR esta consulta del historial médico? Esta acción no se puede deshacer.');">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash"></i> Eliminar Consulta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de tipo de consulta -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-bookmark"></i> Tipo de Consulta
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:if="${consulta.cita != null}" class="alert alert-success mb-0">
+                        <i class="bi bi-link"></i>
+                        <strong>Consulta Programada</strong>
+                        <p class="small mb-0 mt-2">
+                            Esta consulta está vinculada a una cita previamente agendada.
+                        </p>
+                    </div>
+                    <div th:if="${consulta.cita == null}" class="alert alert-warning mb-0">
+                        <i class="bi bi-clipboard-pulse"></i>
+                        <strong>Consulta Directa</strong>
+                        <p class="small mb-0 mt-2">
+                            Esta consulta se registró sin cita previa (urgencia o consulta espontánea).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
